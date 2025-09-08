@@ -65,6 +65,14 @@ export default function WelcomeScreen() {
               </Text>
             </TouchableOpacity>
           </Link>
+
+          <Link href="/catalog" asChild>
+            <TouchableOpacity style={styles.catalogButton}>
+              <Text style={styles.catalogButtonText}>
+                📦 Каталог товаров
+              </Text>
+            </TouchableOpacity>
+          </Link>
         </View>
       </ScrollView>
     </SafeAreaView>
