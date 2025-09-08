@@ -14,6 +14,7 @@ import {
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSimpleI18n } from '../../contexts/SimpleI18nContext';
+import { GoogleLoginButton } from '../../components/GoogleLoginButton';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
