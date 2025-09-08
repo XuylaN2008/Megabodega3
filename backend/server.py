@@ -134,6 +134,92 @@ async def get_current_user_info(current_user: dict = Depends(get_current_active_
         del user_dict["password"]
     return User(**user_dict)
 
+# Google OAuth endpoints
+@api_router.get("/auth/google/login")
+async def google_login_redirect(request: Request):
+    """Redirect to Google OAuth login"""
+    # Get the redirect URL from frontend
+    redirect_url = request.url_for("google_callback")
+    google_url = get_google_login_url(str(redirect_url))
+    return RedirectResponse(url=google_url)
+
+@api_router.get("/auth/google/callback")
+async def google_callback(session_id: str = None, db = Depends(get_database)):
+    """Handle Google OAuth callback"""
+    if not session_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Missing session_id parameter"
+        )
+    
+    try:
+        auth_response, session_token = await handle_google_auth(session_id, db)
+        
+        # Set HttpOnly cookie for session
+        response = JSONResponse(content={
+            "success": True,
+            "user": auth_response.user.dict(),
+            "access_token": auth_response.access_token
+        })
+        
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=7 * 24 * 60 * 60,  # 7 days
+            path="/"
+        )
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Google OAuth error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/auth/google/session")
+async def google_session_auth(request: Request, db = Depends(get_database)):
+    """Authenticate with Google session ID"""
+    try:
+        data = await request.json()
+        session_id = data.get("session_id")
+        
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id is required")
+        
+        auth_response, session_token = await handle_google_auth(session_id, db)
+        
+        return {
+            "success": True,
+            "user": auth_response.user.dict(),
+            "access_token": auth_response.access_token,
+            "session_token": session_token
+        }
+        
+    except Exception as e:
+        logger.error(f"Google session auth error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/auth/logout")
+async def logout_user(request: Request, response: Response, db = Depends(get_database)):
+    """Logout user and clear session"""
+    try:
+        # Get session token from cookie
+        session_token = request.cookies.get("session_token")
+        
+        if session_token:
+            await logout_session(session_token, db)
+        
+        # Clear cookie
+        response.delete_cookie(key="session_token", path="/")
+        
+        return {"message": "Logged out successfully"}
+        
+    except Exception as e:
+        logger.error(f"Logout error: {str(e)}")
+        return {"message": "Logged out"}
+
 # Store endpoints
 @api_router.post("/stores", response_model=Store)
 async def create_store(
@@ -262,92 +348,6 @@ async def get_product(product_id: str, db = Depends(get_database)):
             detail="Product not found"
         )
     return Product(**product)
-
-# Google OAuth endpoints
-@api_router.get("/auth/google/login")
-async def google_login_redirect(request: Request):
-    """Redirect to Google OAuth login"""
-    # Get the redirect URL from frontend
-    redirect_url = request.url_for("google_callback")
-    google_url = get_google_login_url(str(redirect_url))
-    return RedirectResponse(url=google_url)
-
-@api_router.get("/auth/google/callback")
-async def google_callback(session_id: str = None, db = Depends(get_database)):
-    """Handle Google OAuth callback"""
-    if not session_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Missing session_id parameter"
-        )
-    
-    try:
-        auth_response, session_token = await handle_google_auth(session_id, db)
-        
-        # Set HttpOnly cookie for session
-        response = JSONResponse(content={
-            "success": True,
-            "user": auth_response.user.dict(),
-            "access_token": auth_response.access_token
-        })
-        
-        response.set_cookie(
-            key="session_token",
-            value=session_token,
-            httponly=True,
-            secure=True,
-            samesite="none",
-            max_age=7 * 24 * 60 * 60,  # 7 days
-            path="/"
-        )
-        
-        return response
-        
-    except Exception as e:
-        logger.error(f"Google OAuth error: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
-
-@api_router.post("/auth/google/session")
-async def google_session_auth(request: Request, db = Depends(get_database)):
-    """Authenticate with Google session ID"""
-    try:
-        data = await request.json()
-        session_id = data.get("session_id")
-        
-        if not session_id:
-            raise HTTPException(status_code=400, detail="session_id is required")
-        
-        auth_response, session_token = await handle_google_auth(session_id, db)
-        
-        return {
-            "success": True,
-            "user": auth_response.user.dict(),
-            "access_token": auth_response.access_token,
-            "session_token": session_token
-        }
-        
-    except Exception as e:
-        logger.error(f"Google session auth error: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
-
-@api_router.post("/auth/logout")
-async def logout_user(request: Request, response: Response, db = Depends(get_database)):
-    """Logout user and clear session"""
-    try:
-        # Get session token from cookie
-        session_token = request.cookies.get("session_token")
-        
-        if session_token:
-            await logout_session(session_token, db)
-        
-        # Clear cookie
-        response.delete_cookie(key="session_token", path="/")
-        
-        return {"message": "Logged out successfully"}
-        
-    except Exception as e:
-        logger.error(f"Logout error: {str(e)}")
-        return {"message": "Logged out"}
 
 # Include the router in the main app
 app.include_router(api_router)
