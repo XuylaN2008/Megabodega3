@@ -19,7 +19,8 @@ export default function RootLayout() {
           <Stack.Screen name="auth/login" />
           <Stack.Screen name="auth/register" />
           <Stack.Screen name="browse/index" />
-          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="products" />
+          <Stack.Screen name="dashboard" />
         </Stack>
       </AuthProvider>
     </SimpleI18nProvider>
