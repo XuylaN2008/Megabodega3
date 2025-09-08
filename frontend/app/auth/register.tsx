@@ -43,6 +43,23 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { register } = useAuth();
+  const { t } = useI18n();
+
+  // Animation values
+  const headerAnimation = useSharedValue(0);
+  const roleAnimation = useSharedValue(0);
+  const formAnimation = useSharedValue(0);
+  const buttonAnimation = useSharedValue(0);
+  const linkAnimation = useSharedValue(0);
+
+  useEffect(() => {
+    // Staggered entrance animations
+    headerAnimation.value = withDelay(100, withSpring(1, { damping: 15, stiffness: 200 }));
+    roleAnimation.value = withDelay(250, withSpring(1, { damping: 15, stiffness: 200 }));
+    formAnimation.value = withDelay(400, withSpring(1, { damping: 15, stiffness: 200 }));
+    buttonAnimation.value = withDelay(600, withSpring(1, { damping: 15, stiffness: 200 }));
+    linkAnimation.value = withDelay(750, withSpring(1, { damping: 15, stiffness: 200 }));
+  }, []);
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
