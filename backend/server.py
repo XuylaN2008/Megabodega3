@@ -1,6 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from database import connect_to_mongo, close_mongo_connection, get_database
@@ -9,6 +9,7 @@ from auth import (
     get_current_active_user, get_customer_user, get_store_admin_user,
     get_delivery_user
 )
+from auth_google import handle_google_auth, get_google_login_url, logout_session
 from models import *
 from typing import List, Optional
 import os
