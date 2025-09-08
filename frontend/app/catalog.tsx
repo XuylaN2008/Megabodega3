@@ -110,20 +110,25 @@ export default function CatalogScreen() {
     <View key={product.id} style={styles.productCard}>
       <View style={styles.productImage}>
         {product.image ? (
-          <Image source={{ uri: product.image }} style={styles.productImageImg} />
+          <Text style={styles.productEmoji}>{product.image}</Text>
         ) : (
           <Text style={styles.productEmoji}>🍽️</Text>
         )}
       </View>
       <View style={styles.productInfo}>
-        <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
+        <Text style={styles.productName} numberOfLines={2}>
+          {getProductName(product)}
+        </Text>
         <Text style={styles.productDescription} numberOfLines={2}>
-          {product.description}
+          {getProductDescription(product)}
         </Text>
         <View style={styles.productFooter}>
           <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
           <TouchableOpacity 
-            style={styles.addButton}
+            style={[
+              styles.addButton,
+              !product.in_stock && styles.addButtonDisabled
+            ]}
             onPress={() => handleAddToCart(product)}
             disabled={!product.in_stock}
           >
