@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from payment_service import PaymentService
 from payment_models import CheckoutRequest
 from auth import get_current_user_optional
+from database import get_database
 import logging
 
 logger = logging.getLogger(__name__)
