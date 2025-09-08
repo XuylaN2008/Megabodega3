@@ -659,6 +659,9 @@ class BackendTester:
         # Test sequence
         tests = [
             ("Health Check", self.test_health_check),
+            ("Product Catalog Endpoints", self.test_product_catalog_endpoints),
+            ("Product Filtering", self.test_product_filtering),
+            ("Google OAuth Endpoints", self.test_google_oauth_endpoints),
             ("User Registration", self.test_user_registration),
             ("Duplicate Registration", self.test_duplicate_registration),
             ("User Login", self.test_user_login),
@@ -666,7 +669,8 @@ class BackendTester:
             ("Get Current User", self.test_get_current_user),
             ("Unauthorized Access", self.test_unauthorized_access),
             ("Password Hashing", self.test_password_hashing),
-            ("Role-based Access", self.test_role_based_access)
+            ("Role-based Access", self.test_role_based_access),
+            ("CORS Configuration", self.test_cors_configuration)
         ]
         
         passed = 0
