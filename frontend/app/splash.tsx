@@ -1,129 +1,236 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { router } from 'expo-router';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withDelay,
-  withSequence,
-  withTiming,
-  interpolate,
-  runOnJS,
-} from 'react-native-reanimated';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Dimensions,
+} from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { useMegaBodegaI18n } from '../contexts/MegaBodegaI18nContext';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function SplashScreen() {
-  const logoScale = useSharedValue(0);
-  const logoOpacity = useSharedValue(0);
-  const titleOpacity = useSharedValue(0);
-  const sloganOpacity = useSharedValue(0);
-  const backgroundGradient = useSharedValue(0);
-
-  const navigateToWelcome = () => {
-    router.replace('/welcome');
-  };
+  const { t } = useMegaBodegaI18n();
+  
+  // Animation values
+  const logoScale = useRef(new Animated.Value(0)).current;
+  const logoRotation = useRef(new Animated.Value(0)).current;
+  const titleOpacity = useRef(new Animated.Value(0)).current;
+  const titleTranslateY = useRef(new Animated.Value(30)).current;
+  const subtitleOpacity = useRef(new Animated.Value(0)).current;
+  const sloganOpacity = useRef(new Animated.Value(0)).current;
+  const backgroundScale = useRef(new Animated.Value(1.2)).current;
 
   useEffect(() => {
-    // Sequence of animations
-    const startAnimations = () => {
-      // Background gradient
-      backgroundGradient.value = withTiming(1, { duration: 1000 });
-      
-      // Logo appears with spring effect
-      logoScale.value = withDelay(
-        300,
-        withSpring(1, {
-          damping: 15,
-          stiffness: 200,
-        })
-      );
-      
-      logoOpacity.value = withDelay(
-        300,
-        withTiming(1, { duration: 600 })
-      );
+    // Start animation sequence
+    startAnimations();
+    
+    // Navigate to main screen after animation
+    const timer = setTimeout(() => {
+      router.replace('/');
+    }, 3500);
 
-      // Title appears
-      titleOpacity.value = withDelay(
-        800,
-        withTiming(1, { duration: 500 })
-      );
-
-      // Slogan appears
-      sloganOpacity.value = withDelay(
-        1200,
-        withTiming(1, { duration: 500 }, () => {
-          // Navigate to welcome after animations complete
-          runOnJS(navigateToWelcome)();
-        })
-      );
-    };
-
-    // Start animations after a short delay
-    setTimeout(startAnimations, 500);
+    return () => clearTimeout(timer);
   }, []);
 
-  const logoAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: logoScale.value }],
-      opacity: logoOpacity.value,
-    };
-  });
+  const startAnimations = () => {
+    // Background zoom in
+    Animated.timing(backgroundScale, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: true,
+    }).start();
 
-  const titleAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(titleOpacity.value, [0, 1], [20, 0]);
-    return {
-      opacity: titleOpacity.value,
-      transform: [{ translateY }],
-    };
-  });
+    // Logo entrance with bounce
+    Animated.sequence([
+      Animated.delay(300),
+      Animated.spring(logoScale, {
+        toValue: 1,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
-  const sloganAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(sloganOpacity.value, [0, 1], [20, 0]);
-    return {
-      opacity: sloganOpacity.value,
-      transform: [{ translateY }],
-    };
-  });
+    // Logo subtle rotation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(logoRotation, {
+          toValue: 1,
+          duration: 4000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoRotation, {
+          toValue: 0,
+          duration: 4000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
 
-  const backgroundAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: backgroundGradient.value,
-    };
+    // Title fade in and slide up
+    Animated.sequence([
+      Animated.delay(800),
+      Animated.parallel([
+        Animated.timing(titleOpacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(titleTranslateY, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+
+    // Subtitle fade in
+    Animated.sequence([
+      Animated.delay(1400),
+      Animated.timing(subtitleOpacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Slogan fade in
+    Animated.sequence([
+      Animated.delay(2000),
+      Animated.timing(sloganOpacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const logoRotationInterpolate = logoRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
   });
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.backgroundGradient, backgroundAnimatedStyle]}>
+      <StatusBar style="light" />
+      
+      {/* Animated Background */}
+      <Animated.View 
+        style={[
+          StyleSheet.absoluteFill,
+          { transform: [{ scale: backgroundScale }] }
+        ]}
+      >
         <LinearGradient
           colors={['#1a1a1a', '#2a2a2a', '#1a1a1a']}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
       </Animated.View>
 
+      {/* Floating particles background effect */}
+      <View style={styles.particlesContainer}>
+        {[...Array(8)].map((_, i) => (
+          <Animated.View
+            key={i}
+            style={[
+              styles.particle,
+              {
+                left: Math.random() * width,
+                top: Math.random() * height,
+                opacity: subtitleOpacity,
+              }
+            ]}
+          />
+        ))}
+      </View>
+
+      {/* Main Content */}
       <View style={styles.content}>
         {/* Logo */}
-        <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>MB</Text>
-          </View>
+        <Animated.View
+          style={[
+            styles.logoContainer,
+            {
+              transform: [
+                { scale: logoScale },
+                { rotate: logoRotationInterpolate }
+              ],
+            },
+          ]}
+        >
+          <LinearGradient
+            colors={['#007AFF', '#0051D5']}
+            style={styles.logoGradient}
+          >
+            <Text style={styles.logoEmoji}>🏪</Text>
+          </LinearGradient>
         </Animated.View>
 
         {/* Title */}
-        <Animated.Text style={[styles.title, titleAnimatedStyle]}>
-          MegaBodega
-        </Animated.Text>
+        <Animated.View
+          style={[
+            styles.titleContainer,
+            {
+              opacity: titleOpacity,
+              transform: [{ translateY: titleTranslateY }],
+            },
+          ]}
+        >
+          <Text style={styles.title}>{t('welcome.title')}</Text>
+        </Animated.View>
+
+        {/* Subtitle */}
+        <Animated.View
+          style={[
+            styles.subtitleContainer,
+            { opacity: subtitleOpacity },
+          ]}
+        >
+          <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
+        </Animated.View>
 
         {/* Slogan */}
-        <Animated.Text style={[styles.slogan, sloganAnimatedStyle]}>
-          Delivery a tu puerta
-        </Animated.Text>
+        <Animated.View
+          style={[
+            styles.sloganContainer,
+            { opacity: sloganOpacity },
+          ]}
+        >
+          <Text style={styles.slogan}>{t('welcome.slogan')}</Text>
+        </Animated.View>
       </View>
+
+      {/* Loading indicator */}
+      <Animated.View 
+        style={[
+          styles.loadingContainer,
+          { opacity: sloganOpacity }
+        ]}
+      >
+        <View style={styles.loadingBar}>
+          <Animated.View
+            style={[
+              styles.loadingProgress,
+              {
+                transform: [{
+                  scaleX: titleOpacity.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                  }),
+                }],
+              },
+            ]}
+          />
+        </View>
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </Animated.View>
     </View>
   );
 }
@@ -133,8 +240,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a1a',
   },
-  backgroundGradient: {
+  particlesContainer: {
     ...StyleSheet.absoluteFillObject,
+  },
+  particle: {
+    position: 'absolute',
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(0, 122, 255, 0.3)',
   },
   content: {
     flex: 1,
@@ -145,41 +259,81 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 40,
   },
-  logo: {
+  logoGradient: {
     width: 120,
     height: 120,
-    borderRadius: 30,
-    backgroundColor: '#007AFF',
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#007AFF',
     shadowOffset: {
       width: 0,
-      height: 10,
+      height: 8,
     },
     shadowOpacity: 0.3,
     shadowRadius: 20,
-    elevation: 10,
+    elevation: 16,
   },
-  logoText: {
+  logoEmoji: {
+    fontSize: 60,
+  },
+  titleContainer: {
+    marginBottom: 16,
+  },
+  title: {
     fontSize: 48,
     fontWeight: 'bold',
     color: '#fff',
-    letterSpacing: -2,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
     textAlign: 'center',
-    letterSpacing: -1,
+    letterSpacing: -2,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  subtitleContainer: {
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 20,
+    color: '#007AFF',
+    textAlign: 'center',
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  sloganContainer: {
+    marginBottom: 60,
   },
   slogan: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#999',
     textAlign: 'center',
+    fontStyle: 'italic',
+    lineHeight: 22,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    bottom: 100,
+    left: 40,
+    right: 40,
+    alignItems: 'center',
+  },
+  loadingBar: {
+    width: '100%',
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 2,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  loadingProgress: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+    borderRadius: 2,
+    transformOrigin: 'left',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#999',
     fontWeight: '500',
-    letterSpacing: 0.5,
   },
 });
