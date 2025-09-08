@@ -352,6 +352,7 @@ async def get_product(product_id: str, db = Depends(get_database)):
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(payment_router)
 
 if __name__ == "__main__":
     import uvicorn
