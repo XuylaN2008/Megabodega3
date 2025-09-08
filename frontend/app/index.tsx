@@ -140,7 +140,7 @@ export default function WelcomeScreen() {
       
       {/* Language Selector */}
       <Animated.View style={[styles.languageSelectorContainer, languageSelectorAnimatedStyle]}>
-        <LanguageSelector />
+        <LanguageSelector style={styles.languageSelector} />
       </Animated.View>
 
       <View style={styles.content}>
