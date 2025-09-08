@@ -430,6 +430,227 @@ class BackendTester:
             self.log_test("Role-based Access (Store Admin)", False, "Request failed", str(e))
             return False
     
+    def test_product_catalog_endpoints(self):
+        """Test product catalog endpoints"""
+        catalog_success = True
+        
+        # Test GET /api/products
+        try:
+            response = self.session.get(f"{self.base_url}/products")
+            if response.status_code == 200:
+                products = response.json()
+                if len(products) == 11:
+                    self.log_test("Product Catalog (Products)", True, f"Successfully retrieved {len(products)} products")
+                    
+                    # Verify product structure
+                    sample_product = products[0]
+                    required_fields = ["id", "name", "description", "price", "store_id", "category_id"]
+                    if all(field in sample_product for field in required_fields):
+                        self.log_test("Product Structure", True, "Products have all required fields")
+                    else:
+                        self.log_test("Product Structure", False, "Products missing required fields")
+                        catalog_success = False
+                else:
+                    self.log_test("Product Catalog (Products)", False, f"Expected 11 products, got {len(products)}")
+                    catalog_success = False
+            else:
+                self.log_test("Product Catalog (Products)", False, f"HTTP {response.status_code}", response.text)
+                catalog_success = False
+        except Exception as e:
+            self.log_test("Product Catalog (Products)", False, "Request failed", str(e))
+            catalog_success = False
+        
+        # Test GET /api/categories
+        try:
+            response = self.session.get(f"{self.base_url}/categories")
+            if response.status_code == 200:
+                categories = response.json()
+                if len(categories) == 3:
+                    expected_categories = ["Comida Ecuatoriana", "Bebidas", "Frutas Tropicales"]
+                    category_names = [cat["name"] for cat in categories]
+                    if all(name in category_names for name in expected_categories):
+                        self.log_test("Product Catalog (Categories)", True, f"Successfully retrieved {len(categories)} categories: {', '.join(category_names)}")
+                    else:
+                        self.log_test("Product Catalog (Categories)", False, f"Category names mismatch. Expected: {expected_categories}, Got: {category_names}")
+                        catalog_success = False
+                else:
+                    self.log_test("Product Catalog (Categories)", False, f"Expected 3 categories, got {len(categories)}")
+                    catalog_success = False
+            else:
+                self.log_test("Product Catalog (Categories)", False, f"HTTP {response.status_code}", response.text)
+                catalog_success = False
+        except Exception as e:
+            self.log_test("Product Catalog (Categories)", False, "Request failed", str(e))
+            catalog_success = False
+        
+        # Test GET /api/stores
+        try:
+            response = self.session.get(f"{self.base_url}/stores")
+            if response.status_code == 200:
+                stores = response.json()
+                if len(stores) == 2:
+                    expected_stores = ["Cocina de la Mamá", "Frutas del Trópico"]
+                    store_names = [store["name"] for store in stores]
+                    if all(name in store_names for name in expected_stores):
+                        self.log_test("Product Catalog (Stores)", True, f"Successfully retrieved {len(stores)} stores: {', '.join(store_names)}")
+                    else:
+                        self.log_test("Product Catalog (Stores)", False, f"Store names mismatch. Expected: {expected_stores}, Got: {store_names}")
+                        catalog_success = False
+                else:
+                    self.log_test("Product Catalog (Stores)", False, f"Expected 2 stores, got {len(stores)}")
+                    catalog_success = False
+            else:
+                self.log_test("Product Catalog (Stores)", False, f"HTTP {response.status_code}", response.text)
+                catalog_success = False
+        except Exception as e:
+            self.log_test("Product Catalog (Stores)", False, "Request failed", str(e))
+            catalog_success = False
+        
+        return catalog_success
+    
+    def test_product_filtering(self):
+        """Test product filtering by category and store"""
+        filtering_success = True
+        
+        # Test filtering by category (ecuadorian food)
+        try:
+            response = self.session.get(f"{self.base_url}/products?category_id=cat_ecuadorian_food")
+            if response.status_code == 200:
+                products = response.json()
+                if len(products) > 0:
+                    # Verify all products belong to the category
+                    if all(product["category_id"] == "cat_ecuadorian_food" for product in products):
+                        self.log_test("Product Filtering (Category)", True, f"Successfully filtered {len(products)} products by ecuadorian food category")
+                    else:
+                        self.log_test("Product Filtering (Category)", False, "Some products don't belong to the requested category")
+                        filtering_success = False
+                else:
+                    self.log_test("Product Filtering (Category)", False, "No products found for ecuadorian food category")
+                    filtering_success = False
+            else:
+                self.log_test("Product Filtering (Category)", False, f"HTTP {response.status_code}", response.text)
+                filtering_success = False
+        except Exception as e:
+            self.log_test("Product Filtering (Category)", False, "Request failed", str(e))
+            filtering_success = False
+        
+        # Test filtering by store (Cocina de la Mamá)
+        try:
+            response = self.session.get(f"{self.base_url}/products?store_id=store_mamas_kitchen")
+            if response.status_code == 200:
+                products = response.json()
+                if len(products) > 0:
+                    # Verify all products belong to the store
+                    if all(product["store_id"] == "store_mamas_kitchen" for product in products):
+                        self.log_test("Product Filtering (Store)", True, f"Successfully filtered {len(products)} products by Cocina de la Mamá store")
+                    else:
+                        self.log_test("Product Filtering (Store)", False, "Some products don't belong to the requested store")
+                        filtering_success = False
+                else:
+                    self.log_test("Product Filtering (Store)", False, "No products found for Cocina de la Mamá store")
+                    filtering_success = False
+            else:
+                self.log_test("Product Filtering (Store)", False, f"HTTP {response.status_code}", response.text)
+                filtering_success = False
+        except Exception as e:
+            self.log_test("Product Filtering (Store)", False, "Request failed", str(e))
+            filtering_success = False
+        
+        # Test filtering by both category and store
+        try:
+            response = self.session.get(f"{self.base_url}/products?category_id=cat_fruits&store_id=store_tropical_fruits")
+            if response.status_code == 200:
+                products = response.json()
+                if len(products) > 0:
+                    # Verify all products match both filters
+                    valid_products = all(
+                        product["category_id"] == "cat_fruits" and product["store_id"] == "store_tropical_fruits"
+                        for product in products
+                    )
+                    if valid_products:
+                        self.log_test("Product Filtering (Combined)", True, f"Successfully filtered {len(products)} products by fruits category and tropical fruits store")
+                    else:
+                        self.log_test("Product Filtering (Combined)", False, "Some products don't match both filter criteria")
+                        filtering_success = False
+                else:
+                    self.log_test("Product Filtering (Combined)", False, "No products found for combined filters")
+                    filtering_success = False
+            else:
+                self.log_test("Product Filtering (Combined)", False, f"HTTP {response.status_code}", response.text)
+                filtering_success = False
+        except Exception as e:
+            self.log_test("Product Filtering (Combined)", False, "Request failed", str(e))
+            filtering_success = False
+        
+        return filtering_success
+    
+    def test_google_oauth_endpoints(self):
+        """Test Google OAuth endpoints"""
+        oauth_success = True
+        
+        # Test GET /api/auth/google/login
+        try:
+            response = self.session.get(f"{self.base_url}/auth/google/login", allow_redirects=False)
+            if response.status_code in [302, 307]:  # Redirect response
+                redirect_url = response.headers.get("location", "")
+                if "auth.emergentagent.com" in redirect_url:
+                    self.log_test("Google OAuth (Login Redirect)", True, "Google login endpoint properly redirects to auth service")
+                else:
+                    self.log_test("Google OAuth (Login Redirect)", False, f"Unexpected redirect URL: {redirect_url}")
+                    oauth_success = False
+            else:
+                self.log_test("Google OAuth (Login Redirect)", False, f"Expected redirect (302/307), got {response.status_code}")
+                oauth_success = False
+        except Exception as e:
+            self.log_test("Google OAuth (Login Redirect)", False, "Request failed", str(e))
+            oauth_success = False
+        
+        # Test POST /api/auth/google/session (without valid session_id - should fail gracefully)
+        try:
+            response = self.session.post(
+                f"{self.base_url}/auth/google/session",
+                json={"session_id": "invalid_session_id"},
+                headers={"Content-Type": "application/json"}
+            )
+            if response.status_code == 400:
+                self.log_test("Google OAuth (Session Auth)", True, "Google session endpoint properly rejects invalid session")
+            else:
+                self.log_test("Google OAuth (Session Auth)", False, f"Expected 400 for invalid session, got {response.status_code}")
+                oauth_success = False
+        except Exception as e:
+            self.log_test("Google OAuth (Session Auth)", False, "Request failed", str(e))
+            oauth_success = False
+        
+        return oauth_success
+    
+    def test_cors_configuration(self):
+        """Test CORS configuration"""
+        try:
+            # Test preflight request
+            response = self.session.options(
+                f"{self.base_url}/health",
+                headers={
+                    "Origin": "https://ecuador-delivery.preview.emergentagent.com",
+                    "Access-Control-Request-Method": "GET",
+                    "Access-Control-Request-Headers": "Content-Type"
+                }
+            )
+            
+            if response.status_code == 200:
+                cors_headers = response.headers
+                if "access-control-allow-origin" in cors_headers:
+                    self.log_test("CORS Configuration", True, "CORS headers properly configured")
+                    return True
+                else:
+                    self.log_test("CORS Configuration", False, "Missing CORS headers")
+                    return False
+            else:
+                self.log_test("CORS Configuration", False, f"Preflight request failed with {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("CORS Configuration", False, "Request failed", str(e))
+            return False
+    
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Backend API Tests for Ecuador Food Delivery App")
