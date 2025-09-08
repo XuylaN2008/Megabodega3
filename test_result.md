@@ -127,7 +127,7 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "All product catalog endpoints working correctly: GET /api/products returns 11 products, GET /api/categories returns 3 categories (Comida Ecuatoriana, Bebidas, Frutas Tropicales), GET /api/stores returns 2 stores (Cocina de la Mamá, Frutas del Trópico). Product structure validation passed."
+          comment: "All product catalog endpoints working correctly: GET /api/products returns 11 products, GET /api/categories returns 3 categories (Comida Ecuatoriana, Bebidas, Frutas Tropicales), GET /api/stores returns multiple stores including seeded data (Cocina de la Mamá, Frutas del Trópico). Product structure validation passed."
 
   - task: "Product Filtering"
     implemented: true
@@ -236,6 +236,66 @@ backend:
         - working: true
           agent: "testing"
           comment: "MongoDB integration working correctly. User registration, login, and data persistence all functioning properly. Database indexes created successfully"
+
+  - task: "Payment Packages Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/payment_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/payments/packages endpoint working correctly. Returns 4 payment packages (small: $5, medium: $10, large: $15, delivery_fee: $2.50) with proper structure including amount, name, and description fields."
+
+  - task: "Payment Checkout Session Creation"
+    implemented: true
+    working: true
+    file: "/app/backend/payment_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/payments/checkout/session endpoint working correctly for both authenticated and unauthenticated users. Successfully creates Stripe checkout sessions with proper URLs, session IDs, amounts, and package info. Properly validates package IDs and rejects invalid ones with 400 status."
+
+  - task: "Payment Checkout Status Check"
+    implemented: true
+    working: true
+    file: "/app/backend/payment_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/payments/checkout/status/{session_id} endpoint working correctly. Successfully retrieves payment session status from Stripe, returns proper session information including status, payment_status, amount_total, currency, and metadata. Updates local payment transaction records appropriately."
+
+  - task: "Payment Webhook Handler"
+    implemented: true
+    working: true
+    file: "/app/backend/payment_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/payments/webhook/stripe endpoint working correctly. Properly validates Stripe webhook signatures and rejects requests with missing signatures with 400 status. Webhook processing infrastructure is properly implemented."
+
+  - task: "Payment Service Integration"
+    implemented: true
+    working: true
+    file: "/app/backend/payment_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Payment service integration with Stripe working correctly. Fixed payment packages prevent amount manipulation, proper transaction logging to database, session status tracking, and webhook event handling all functioning properly. Stripe API integration via emergentintegrations library working as expected."
 
 frontend:
   - task: "MegaBodega Internationalization System"
