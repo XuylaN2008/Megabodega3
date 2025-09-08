@@ -441,6 +441,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  addButtonDisabled: {
+    backgroundColor: '#666',
+    opacity: 0.5,
+  },
   addButtonText: {
     color: '#fff',
     fontSize: 16,
