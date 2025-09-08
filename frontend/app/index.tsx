@@ -154,30 +154,14 @@ export default function WelcomeScreen() {
           </Animated.Text>
         </View>
 
-        {/* Features */}
-        <Animated.View style={[styles.features, featuresAnimatedStyle]}>
+                <Animated.View style={[styles.features, featuresAnimatedStyle]}>
           {features.map((feature, index) => (
-            <Animated.Text
+            <Text
               key={index}
-              style={[
-                styles.featureText,
-                {
-                  opacity: featuresAnimation,
-                  transform: [
-                    {
-                      translateX: featuresAnimation.value
-                        ? withDelay(
-                            index * 100,
-                            withSpring(0, { damping: 15, stiffness: 200 })
-                          )
-                        : -50,
-                    },
-                  ],
-                },
-              ]}
+              style={styles.featureText}
             >
               {feature}
-            </Animated.Text>
+            </Text>
           ))}
         </Animated.View>
 
