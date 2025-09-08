@@ -204,7 +204,7 @@ class PaymentService:
             # Update transaction based on webhook event
             if webhook_response.session_id:
                 # Find and update transaction
-                transaction = await self.collection.find_one({"session_id": webhook_response.session_id})
+                transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
                 if transaction:
                     new_status = PaymentStatus.PAID if webhook_response.payment_status == "paid" else PaymentStatus.PENDING
                     
