@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,24 +10,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { useI18n } from '../../contexts/I18nContext';
+import { useSimpleI18n } from '../../contexts/SimpleI18nContext';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withDelay,
-  withTiming,
-  interpolate,
-  runOnJS,
-} from 'react-native-reanimated';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function RegisterScreen() {
   const [formData, setFormData] = useState({
@@ -40,26 +27,9 @@ export default function RegisterScreen() {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { register } = useAuth();
-  const { t } = useI18n();
-
-  // Animation values
-  const headerAnimation = useSharedValue(0);
-  const roleAnimation = useSharedValue(0);
-  const formAnimation = useSharedValue(0);
-  const buttonAnimation = useSharedValue(0);
-  const linkAnimation = useSharedValue(0);
-
-  useEffect(() => {
-    // Staggered entrance animations
-    headerAnimation.value = withDelay(100, withSpring(1, { damping: 15, stiffness: 200 }));
-    roleAnimation.value = withDelay(250, withSpring(1, { damping: 15, stiffness: 200 }));
-    formAnimation.value = withDelay(400, withSpring(1, { damping: 15, stiffness: 200 }));
-    buttonAnimation.value = withDelay(600, withSpring(1, { damping: 15, stiffness: 200 }));
-    linkAnimation.value = withDelay(750, withSpring(1, { damping: 15, stiffness: 200 }));
-  }, []);
+  const { t } = useSimpleI18n();
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -67,19 +37,19 @@ export default function RegisterScreen() {
 
   const validateForm = () => {
     if (!formData.email || !formData.fullName || !formData.phone || !formData.password) {
-      return 'Por favor completa todos los campos';
+      return 'Пожалуйста, заполните все поля';
     }
     
     if (formData.password !== formData.confirmPassword) {
-      return 'Las contraseñas no coinciden';
+      return 'Пароли не совпадают';
     }
     
     if (formData.password.length < 6) {
-      return 'La contraseña debe tener al menos 6 caracteres';
+      return 'Пароль должен содержать минимум 6 символов';
     }
     
     if (!formData.email.includes('@')) {
-      return 'Por favor ingresa un email válido';
+      return 'Введите корректный email';
     }
     
     return null;
@@ -88,7 +58,7 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     const error = validateForm();
     if (error) {
-      Alert.alert('Error', error);
+      Alert.alert(t('common.error'), error);
       return;
     }
 
@@ -101,33 +71,19 @@ export default function RegisterScreen() {
         role: formData.role,
         password: formData.password,
       });
-      router.replace('/(tabs)');
+      Alert.alert(t('common.success'), 'Аккаунт успешно создан!');
+      router.replace('/dashboard');
     } catch (error: any) {
-      Alert.alert('Error de Registro', error.message);
+      Alert.alert(t('common.error'), error.message || 'Ошибка регистрации');
     } finally {
       setLoading(false);
     }
   };
 
   const roleOptions = [
-    { 
-      value: 'customer', 
-      label: t('auth.accountTypes.customer'), 
-      icon: 'person', 
-      description: t('auth.accountTypes.descriptions.customer')
-    },
-    { 
-      value: 'store_admin', 
-      label: t('auth.accountTypes.storeAdmin'), 
-      icon: 'storefront', 
-      description: t('auth.accountTypes.descriptions.storeAdmin')
-    },
-    { 
-      value: 'delivery', 
-      label: t('auth.accountTypes.delivery'), 
-      icon: 'bicycle', 
-      description: t('auth.accountTypes.descriptions.delivery')
-    },
+    { value: 'customer', label: t('auth.customerRole'), icon: 'person' },
+    { value: 'store_admin', label: t('auth.storeRole'), icon: 'storefront' },
+    { value: 'delivery', label: t('auth.deliveryRole'), icon: 'bicycle' },
   ];
 
   return (
@@ -144,17 +100,15 @@ export default function RegisterScreen() {
                 <Ionicons name="arrow-back" size={24} color="#fff" />
               </TouchableOpacity>
             </Link>
-            <Text style={styles.title}>Crear Cuenta</Text>
-            <Text style={styles.subtitle}>
-              Únete a EcuaDelivery hoy mismo
-            </Text>
+            <Text style={styles.title}>{t('auth.registerTitle')}</Text>
+            <Text style={styles.subtitle}>Присоединяйтесь к EcuaDelivery</Text>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
             {/* Role Selection */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Tipo de cuenta</Text>
+              <Text style={styles.label}>{t('auth.accountType')}</Text>
               <View style={styles.roleContainer}>
                 {roleOptions.map((option) => (
                   <TouchableOpacity
@@ -167,54 +121,49 @@ export default function RegisterScreen() {
                   >
                     <Ionicons
                       name={option.icon as any}
-                      size={24}
+                      size={20}
                       color={formData.role === option.value ? '#007AFF' : '#999'}
                     />
-                    <View style={styles.roleTextContainer}>
-                      <Text
-                        style={[
-                          styles.roleLabel,
-                          formData.role === option.value && styles.roleLabelSelected,
-                        ]}
-                      >
-                        {option.label}
-                      </Text>
-                      <Text style={styles.roleDescription}>{option.description}</Text>
-                    </View>
+                    <Text
+                      style={[
+                        styles.roleLabel,
+                        formData.role === option.value && styles.roleLabelSelected,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Nombre completo</Text>
+              <Text style={styles.label}>{t('auth.fullName')}</Text>
               <TextInput
                 style={styles.input}
                 value={formData.fullName}
                 onChangeText={(value) => updateFormData('fullName', value)}
-                placeholder="Tu nombre completo"
+                placeholder="Ваше полное имя"
                 placeholderTextColor="#666"
                 autoCapitalize="words"
-                autoCorrect={false}
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('auth.email')}</Text>
               <TextInput
                 style={styles.input}
                 value={formData.email}
                 onChangeText={(value) => updateFormData('email', value)}
-                placeholder="tu@email.com"
+                placeholder="your@email.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                autoCorrect={false}
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Teléfono</Text>
+              <Text style={styles.label}>{t('auth.phone')}</Text>
               <TextInput
                 style={styles.input}
                 value={formData.phone}
@@ -226,17 +175,16 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Contraseña</Text>
+              <Text style={styles.label}>{t('auth.password')}</Text>
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={[styles.input, styles.passwordInput]}
                   value={formData.password}
                   onChangeText={(value) => updateFormData('password', value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Минимум 6 символов"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
-                  autoCorrect={false}
                 />
                 <TouchableOpacity
                   style={styles.eyeButton}
@@ -252,47 +200,34 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirmar contraseña</Text>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={[styles.input, styles.passwordInput]}
-                  value={formData.confirmPassword}
-                  onChangeText={(value) => updateFormData('confirmPassword', value)}
-                  placeholder="Confirma tu contraseña"
-                  placeholderTextColor="#666"
-                  secureTextEntry={!showConfirmPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <TouchableOpacity
-                  style={styles.eyeButton}
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  <Ionicons
-                    name={showConfirmPassword ? 'eye-off' : 'eye'}
-                    size={20}
-                    color="#666"
-                  />
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.label}>{t('auth.confirmPassword')}</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.confirmPassword}
+                onChangeText={(value) => updateFormData('confirmPassword', value)}
+                placeholder="Повторите пароль"
+                placeholderTextColor="#666"
+                secureTextEntry={true}
+                autoCapitalize="none"
+              />
             </View>
 
             <TouchableOpacity
-              style={[styles.registerButton, loading && styles.registerButtonDisabled]}
+              style={[styles.registerButton, loading && styles.buttonDisabled]}
               onPress={handleRegister}
               disabled={loading}
             >
               <Text style={styles.registerButtonText}>
-                {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+                {loading ? t('common.loading') : t('auth.registerButton')}
               </Text>
             </TouchableOpacity>
 
             {/* Login Link */}
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>¿Ya tienes cuenta? </Text>
+              <Text style={styles.loginText}>{t('auth.hasAccount')}</Text>
               <Link href="/auth/login" asChild>
                 <TouchableOpacity>
-                  <Text style={styles.loginLink}>Inicia sesión aquí</Text>
+                  <Text style={styles.loginLink}>{t('auth.loginHere')}</Text>
                 </TouchableOpacity>
               </Link>
             </View>
@@ -322,6 +257,9 @@ const styles = StyleSheet.create({
   backButton: {
     marginBottom: 20,
     alignSelf: 'flex-start',
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#333',
   },
   title: {
     fontSize: 32,
@@ -357,12 +295,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#2a2a2a',
   },
   roleContainer: {
-    gap: 12,
+    flexDirection: 'row',
+    gap: 8,
   },
   roleOption: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     borderWidth: 1,
     borderColor: '#333',
     borderRadius: 12,
@@ -372,22 +312,13 @@ const styles = StyleSheet.create({
     borderColor: '#007AFF',
     backgroundColor: '#1a2332',
   },
-  roleTextContainer: {
-    marginLeft: 12,
-    flex: 1,
-  },
   roleLabel: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
     color: '#fff',
-    marginBottom: 2,
+    marginLeft: 8,
   },
   roleLabelSelected: {
     color: '#007AFF',
-  },
-  roleDescription: {
-    fontSize: 14,
-    color: '#999',
   },
   passwordContainer: {
     position: 'relative',
@@ -406,10 +337,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 20,
     marginBottom: 32,
   },
-  registerButtonDisabled: {
+  buttonDisabled: {
     opacity: 0.6,
   },
   registerButtonText: {

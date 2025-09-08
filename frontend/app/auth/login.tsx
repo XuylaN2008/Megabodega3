@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { useI18n } from '../../contexts/I18nContext';
+import { useSimpleI18n } from '../../contexts/SimpleI18nContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
@@ -23,61 +23,24 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   
   const { login } = useAuth();
-  const { t } = useI18n();
+  const { t } = useSimpleI18n();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert(t('common.error'), 'Por favor completa todos los campos');
+      Alert.alert(t('common.error'), 'Пожалуйста, заполните все поля');
       return;
     }
 
     setLoading(true);
     try {
       await login(email, password);
-      router.replace('/(tabs)');
+      Alert.alert(t('common.success'), 'Вы успешно вошли в систему!');
+      router.replace('/dashboard');
     } catch (error: any) {
-      Alert.alert('Error de Login', error.message);
+      Alert.alert(t('common.error'), error.message || 'Ошибка входа');
     } finally {
       setLoading(false);
     }
-  };
-
-  // Animated styles
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: interpolate(headerAnimation.value, [0, 1], [-50, 0]) },
-      { scale: interpolate(headerAnimation.value, [0, 1], [0.9, 1]) }
-    ],
-    opacity: headerAnimation.value,
-  }));
-
-  const formAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(formAnimation.value, [0, 1], [SCREEN_WIDTH * 0.3, 0]) }],
-    opacity: formAnimation.value,
-  }));
-
-  const buttonAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(buttonAnimation.value, [0, 1], [30, 0]) }],
-    opacity: buttonAnimation.value,
-  }));
-
-  const linkAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(linkAnimation.value, [0, 1], [20, 0]) }],
-    opacity: linkAnimation.value,
-  }));
-
-  // Button press animation
-  const loginButtonScale = useSharedValue(1);
-  const loginButtonAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: loginButtonScale.value }],
-  }));
-
-  const onLoginPressIn = () => {
-    loginButtonScale.value = withSpring(0.96, { damping: 15, stiffness: 400 });
-  };
-
-  const onLoginPressOut = () => {
-    loginButtonScale.value = withSpring(1, { damping: 15, stiffness: 400 });
   };
 
   return (
@@ -95,7 +58,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </Link>
             <Text style={styles.title}>{t('auth.loginTitle')}</Text>
-            <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
+            <Text style={styles.subtitle}>Добро пожаловать в EcuaDelivery</Text>
           </View>
 
           {/* Form */}
@@ -106,7 +69,7 @@ export default function LoginScreen() {
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
-                placeholder="tu@email.com"
+                placeholder="your@email.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -121,7 +84,7 @@ export default function LoginScreen() {
                   style={[styles.input, styles.passwordInput]}
                   value={password}
                   onChangeText={setPassword}
-                  placeholder="Tu contraseña"
+                  placeholder="Ваш пароль"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
@@ -141,25 +104,14 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity
-              style={[
-                styles.loginButton,
-                loading && styles.loginButtonDisabled
-              ]}
+              style={[styles.loginButton, loading && styles.buttonDisabled]}
               onPress={handleLogin}
               disabled={loading}
-              activeOpacity={0.8}
             >
               <Text style={styles.loginButtonText}>
-                {loading ? t('auth.loggingIn') : t('auth.loginButton')}
+                {loading ? t('common.loading') : t('auth.loginButton')}
               </Text>
             </TouchableOpacity>
-
-            {/* Divider */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>o</Text>
-              <View style={styles.dividerLine} />
-            </View>
 
             {/* Register Link */}
             <View style={styles.registerContainer}>
@@ -197,15 +149,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: 'flex-start',
     padding: 8,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    backgroundColor: '#333',
   },
   title: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 8,
-    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
@@ -216,7 +167,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -227,7 +178,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#333',
-    borderRadius: 16,
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 16,
@@ -248,34 +199,19 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#007AFF',
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
+    marginTop: 20,
     marginBottom: 32,
   },
-  loginButtonDisabled: {
+  buttonDisabled: {
     opacity: 0.6,
   },
   loginButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#333',
-  },
-  dividerText: {
-    color: '#666',
-    marginHorizontal: 16,
-    fontSize: 14,
+    fontWeight: '600',
   },
   registerContainer: {
     flexDirection: 'row',
