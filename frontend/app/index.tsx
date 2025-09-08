@@ -1,131 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withDelay,
-  withSequence,
-  withTiming,
-  interpolate,
-  runOnJS,
-} from 'react-native-reanimated';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useI18n } from '../contexts/I18nContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
-
 export default function WelcomeScreen() {
   const { t } = useI18n();
-  
-  // Animation values
-  const titleAnimation = useSharedValue(0);
-  const subtitleAnimation = useSharedValue(0);
-  const featuresAnimation = useSharedValue(0);
-  const buttonsAnimation = useSharedValue(0);
-  const languageSelectorAnimation = useSharedValue(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Staggered entrance animations
-    titleAnimation.value = withDelay(200, withSpring(1, {
-      damping: 15,
-      stiffness: 200,
-    }));
-    
-    subtitleAnimation.value = withDelay(400, withSpring(1, {
-      damping: 15,
-      stiffness: 200,
-    }));
-    
-    featuresAnimation.value = withDelay(600, withSpring(1, {
-      damping: 15,
-      stiffness: 200,
-    }));
-    
-    buttonsAnimation.value = withDelay(800, withSpring(1, {
-      damping: 15,
-      stiffness: 200,
-    }));
-
-    languageSelectorAnimation.value = withDelay(1000, withSpring(1, {
-      damping: 15,
-      stiffness: 200,
-    }));
+    // Simple loading animation
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
-
-  const titleAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(titleAnimation.value, [0, 1], [50, 0]);
-    const scale = interpolate(titleAnimation.value, [0, 1], [0.8, 1]);
-    
-    return {
-      transform: [{ translateY }, { scale }],
-      opacity: titleAnimation.value,
-    };
-  });
-
-  const subtitleAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(subtitleAnimation.value, [0, 1], [30, 0]);
-    
-    return {
-      transform: [{ translateY }],
-      opacity: subtitleAnimation.value,
-    };
-  });
-
-  const featuresAnimatedStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(featuresAnimation.value, [0, 1], [-SCREEN_WIDTH * 0.3, 0]);
-    
-    return {
-      transform: [{ translateX }],
-      opacity: featuresAnimation.value,
-    };
-  });
-
-  const buttonsAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(buttonsAnimation.value, [0, 1], [50, 0]);
-    
-    return {
-      transform: [{ translateY }],
-      opacity: buttonsAnimation.value,
-    };
-  });
-
-  const languageSelectorAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(languageSelectorAnimation.value, [0, 1], [-30, 0]);
-    const scale = interpolate(languageSelectorAnimation.value, [0, 1], [0.9, 1]);
-    
-    return {
-      transform: [{ translateY }, { scale }],
-      opacity: languageSelectorAnimation.value,
-    };
-  });
-
-  // Button press animations
-  const createButtonPressAnimation = () => {
-    const scale = useSharedValue(1);
-    
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scale.value }],
-    }));
-
-    const onPressIn = () => {
-      scale.value = withSpring(0.95, { damping: 15, stiffness: 400 });
-    };
-
-    const onPressOut = () => {
-      scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-    };
-
-    return { animatedStyle, onPressIn, onPressOut };
-  };
-
-  const primaryButtonAnim = createButtonPressAnimation();
-  const secondaryButtonAnim = createButtonPressAnimation();
-  const tertiaryButtonAnim = createButtonPressAnimation();
 
   const features = [
     t('features.catalog'),
@@ -139,22 +31,23 @@ export default function WelcomeScreen() {
       <StatusBar style="light" />
       
       {/* Language Selector */}
-      <Animated.View style={[styles.languageSelectorContainer, languageSelectorAnimatedStyle]}>
+      <View style={styles.languageSelectorContainer}>
         <LanguageSelector style={styles.languageSelector} />
-      </Animated.View>
+      </View>
 
-      <View style={styles.content}>
+      <View style={[styles.content, isLoaded && styles.contentLoaded]}>
         {/* Header */}
         <View style={styles.header}>
-          <Animated.Text style={[styles.title, titleAnimatedStyle]}>
+          <Text style={styles.title}>
             {t('welcomeTitle')}
-          </Animated.Text>
-          <Animated.Text style={[styles.subtitle, subtitleAnimatedStyle]}>
+          </Text>
+          <Text style={styles.subtitle}>
             {t('welcomeSubtitle')}
-          </Animated.Text>
+          </Text>
         </View>
 
-                <Animated.View style={[styles.features, featuresAnimatedStyle]}>
+        {/* Features */}
+        <View style={styles.features}>
           {features.map((feature, index) => (
             <Text
               key={index}
@@ -163,49 +56,43 @@ export default function WelcomeScreen() {
               {feature}
             </Text>
           ))}
-        </Animated.View>
+        </View>
 
         {/* Action Buttons */}
-        <Animated.View style={[styles.buttonContainer, buttonsAnimatedStyle]}>
+        <View style={styles.buttonContainer}>
           <Link href="/auth/login" asChild>
-            <AnimatedTouchableOpacity
-              style={[styles.primaryButton, primaryButtonAnim.animatedStyle]}
-              onPressIn={primaryButtonAnim.onPressIn}
-              onPressOut={primaryButtonAnim.onPressOut}
-              activeOpacity={1}
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              activeOpacity={0.8}
             >
               <Text style={styles.primaryButtonText}>
                 {t('buttons.login')}
               </Text>
-            </AnimatedTouchableOpacity>
+            </TouchableOpacity>
           </Link>
 
           <Link href="/auth/register" asChild>
-            <AnimatedTouchableOpacity
-              style={[styles.secondaryButton, secondaryButtonAnim.animatedStyle]}
-              onPressIn={secondaryButtonAnim.onPressIn}
-              onPressOut={secondaryButtonAnim.onPressOut}
-              activeOpacity={1}
+            <TouchableOpacity 
+              style={styles.secondaryButton}
+              activeOpacity={0.8}
             >
               <Text style={styles.secondaryButtonText}>
                 {t('buttons.register')}
               </Text>
-            </AnimatedTouchableOpacity>
+            </TouchableOpacity>
           </Link>
 
           <Link href="/browse" asChild>
-            <AnimatedTouchableOpacity
-              style={[styles.tertiaryButton, tertiaryButtonAnim.animatedStyle]}
-              onPressIn={tertiaryButtonAnim.onPressIn}
-              onPressOut={tertiaryButtonAnim.onPressOut}
-              activeOpacity={1}
+            <TouchableOpacity 
+              style={styles.tertiaryButton}
+              activeOpacity={0.7}
             >
               <Text style={styles.tertiaryButtonText}>
                 {t('buttons.browseWithoutAccount')}
               </Text>
-            </AnimatedTouchableOpacity>
+            </TouchableOpacity>
           </Link>
-        </Animated.View>
+        </View>
       </View>
     </SafeAreaView>
   );
