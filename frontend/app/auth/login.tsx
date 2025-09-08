@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,24 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
+import { useI18n } from '../../contexts/I18nContext';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withDelay,
+  withTiming,
+  interpolate,
+  runOnJS,
+} from 'react-native-reanimated';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -22,10 +36,25 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   
   const { login } = useAuth();
+  const { t } = useI18n();
+
+  // Animation values
+  const headerAnimation = useSharedValue(0);
+  const formAnimation = useSharedValue(0);
+  const buttonAnimation = useSharedValue(0);
+  const linkAnimation = useSharedValue(0);
+
+  useEffect(() => {
+    // Entrance animations
+    headerAnimation.value = withDelay(100, withSpring(1, { damping: 15, stiffness: 200 }));
+    formAnimation.value = withDelay(300, withSpring(1, { damping: 15, stiffness: 200 }));
+    buttonAnimation.value = withDelay(500, withSpring(1, { damping: 15, stiffness: 200 }));
+    linkAnimation.value = withDelay(700, withSpring(1, { damping: 15, stiffness: 200 }));
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Por favor completa todos los campos');
+      Alert.alert(t('common.error'), 'Por favor completa todos los campos');
       return;
     }
 
@@ -40,6 +69,44 @@ export default function LoginScreen() {
     }
   };
 
+  // Animated styles
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(headerAnimation.value, [0, 1], [-50, 0]) },
+      { scale: interpolate(headerAnimation.value, [0, 1], [0.9, 1]) }
+    ],
+    opacity: headerAnimation.value,
+  }));
+
+  const formAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(formAnimation.value, [0, 1], [SCREEN_WIDTH * 0.3, 0]) }],
+    opacity: formAnimation.value,
+  }));
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: interpolate(buttonAnimation.value, [0, 1], [30, 0]) }],
+    opacity: buttonAnimation.value,
+  }));
+
+  const linkAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: interpolate(linkAnimation.value, [0, 1], [20, 0]) }],
+    opacity: linkAnimation.value,
+  }));
+
+  // Button press animation
+  const loginButtonScale = useSharedValue(1);
+  const loginButtonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: loginButtonScale.value }],
+  }));
+
+  const onLoginPressIn = () => {
+    loginButtonScale.value = withSpring(0.96, { damping: 15, stiffness: 400 });
+  };
+
+  const onLoginPressOut = () => {
+    loginButtonScale.value = withSpring(1, { damping: 15, stiffness: 400 });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -48,22 +115,20 @@ export default function LoginScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Header */}
-          <View style={styles.header}>
+          <Animated.View style={[styles.header, headerAnimatedStyle]}>
             <Link href="/" asChild>
               <TouchableOpacity style={styles.backButton}>
                 <Ionicons name="arrow-back" size={24} color="#fff" />
               </TouchableOpacity>
             </Link>
-            <Text style={styles.title}>Iniciar Sesión</Text>
-            <Text style={styles.subtitle}>
-              Bienvenido de vuelta a EcuaDelivery
-            </Text>
-          </View>
+            <Text style={styles.title}>{t('auth.loginTitle')}</Text>
+            <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
+          </Animated.View>
 
           {/* Form */}
-          <View style={styles.form}>
+          <Animated.View style={[styles.form, formAnimatedStyle]}>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('auth.email')}</Text>
               <TextInput
                 style={styles.input}
                 value={email}
@@ -77,7 +142,7 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Contraseña</Text>
+              <Text style={styles.label}>{t('auth.password')}</Text>
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={[styles.input, styles.passwordInput]}
@@ -102,33 +167,42 @@ export default function LoginScreen() {
               </View>
             </View>
 
-            <TouchableOpacity
-              style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              <Text style={styles.loginButtonText}>
-                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-              </Text>
-            </TouchableOpacity>
+            <Animated.View style={[buttonAnimatedStyle]}>
+              <AnimatedTouchableOpacity
+                style={[
+                  styles.loginButton,
+                  loading && styles.loginButtonDisabled,
+                  loginButtonAnimatedStyle
+                ]}
+                onPress={handleLogin}
+                onPressIn={onLoginPressIn}
+                onPressOut={onLoginPressOut}
+                disabled={loading}
+                activeOpacity={1}
+              >
+                <Text style={styles.loginButtonText}>
+                  {loading ? t('auth.loggingIn') : t('auth.loginButton')}
+                </Text>
+              </AnimatedTouchableOpacity>
+            </Animated.View>
 
             {/* Divider */}
-            <View style={styles.divider}>
+            <Animated.View style={[styles.divider, linkAnimatedStyle]}>
               <View style={styles.dividerLine} />
               <Text style={styles.dividerText}>o</Text>
               <View style={styles.dividerLine} />
-            </View>
+            </Animated.View>
 
             {/* Register Link */}
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>¿No tienes cuenta? </Text>
+            <Animated.View style={[styles.registerContainer, linkAnimatedStyle]}>
+              <Text style={styles.registerText}>{t('auth.noAccount')}</Text>
               <Link href="/auth/register" asChild>
                 <TouchableOpacity>
-                  <Text style={styles.registerLink}>Regístrate aquí</Text>
+                  <Text style={styles.registerLink}>{t('auth.registerHere')}</Text>
                 </TouchableOpacity>
               </Link>
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -154,12 +228,16 @@ const styles = StyleSheet.create({
   backButton: {
     marginBottom: 20,
     alignSelf: 'flex-start',
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   title: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 8,
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
@@ -181,7 +259,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#333',
-    borderRadius: 12,
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 16,
@@ -202,10 +280,18 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderRadius: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     marginBottom: 32,
+    shadowColor: '#007AFF',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
   loginButtonDisabled: {
     opacity: 0.6,
@@ -213,7 +299,8 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   divider: {
     flexDirection: 'row',
