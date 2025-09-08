@@ -1,23 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { LanguageSelector } from '../components/LanguageSelector';
-import { useI18n } from '../contexts/I18nContext';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { SimpleLanguageSelector } from '../components/SimpleLanguageSelector';
+import { useSimpleI18n } from '../contexts/SimpleI18nContext';
 
 export default function WelcomeScreen() {
-  const { t } = useI18n();
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    // Simple loading animation
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const { t } = useSimpleI18n();
 
   const features = [
     t('features.catalog'),
@@ -30,29 +19,22 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
       
-      {/* Language Selector */}
-      <View style={styles.languageSelectorContainer}>
-        <LanguageSelector style={styles.languageSelector} />
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Language Selector */}
+        <View style={styles.languageSelectorContainer}>
+          <SimpleLanguageSelector />
+        </View>
 
-      <View style={[styles.content, isLoaded && styles.contentLoaded]}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>
-            {t('welcomeTitle')}
-          </Text>
-          <Text style={styles.subtitle}>
-            {t('welcomeSubtitle')}
-          </Text>
+          <Text style={styles.title}>{t('welcomeTitle')}</Text>
+          <Text style={styles.subtitle}>{t('welcomeSubtitle')}</Text>
         </View>
 
         {/* Features */}
         <View style={styles.features}>
           {features.map((feature, index) => (
-            <Text
-              key={index}
-              style={styles.featureText}
-            >
+            <Text key={index} style={styles.featureText}>
               {feature}
             </Text>
           ))}
@@ -61,10 +43,7 @@ export default function WelcomeScreen() {
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <Link href="/auth/login" asChild>
-            <TouchableOpacity 
-              style={styles.primaryButton}
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity style={styles.primaryButton}>
               <Text style={styles.primaryButtonText}>
                 {t('buttons.login')}
               </Text>
@@ -72,10 +51,7 @@ export default function WelcomeScreen() {
           </Link>
 
           <Link href="/auth/register" asChild>
-            <TouchableOpacity 
-              style={styles.secondaryButton}
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity style={styles.secondaryButton}>
               <Text style={styles.secondaryButtonText}>
                 {t('buttons.register')}
               </Text>
@@ -83,17 +59,14 @@ export default function WelcomeScreen() {
           </Link>
 
           <Link href="/browse" asChild>
-            <TouchableOpacity 
-              style={styles.tertiaryButton}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.tertiaryButton}>
               <Text style={styles.tertiaryButtonText}>
                 {t('buttons.browseWithoutAccount')}
               </Text>
             </TouchableOpacity>
           </Link>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -103,74 +76,58 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a1a',
   },
-  languageSelectorContainer: {
-    position: 'absolute',
-    top: 60,
-    right: 24,
-    zIndex: 10,
-  },
-  languageSelector: {
-    minWidth: 120,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingVertical: 40,
-    opacity: 0,
+    paddingVertical: 20,
   },
-  contentLoaded: {
-    opacity: 1,
+  languageSelectorContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 60,
+    marginBottom: 50,
   },
   title: {
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 12,
     textAlign: 'center',
-    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 18,
     color: '#999',
     textAlign: 'center',
-    lineHeight: 26,
-    paddingHorizontal: 20,
+    lineHeight: 24,
   },
   features: {
-    marginBottom: 60,
+    marginBottom: 50,
     alignItems: 'flex-start',
     width: '100%',
   },
   featureText: {
     fontSize: 16,
     color: '#ccc',
-    marginBottom: 20,
-    lineHeight: 24,
-    paddingLeft: 4,
+    marginBottom: 16,
+    lineHeight: 22,
   },
   buttonContainer: {
     width: '100%',
-    maxWidth: 320,
     gap: 16,
   },
   primaryButton: {
     backgroundColor: '#007AFF',
-    paddingVertical: 18,
+    paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: 'center',
   },
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    fontWeight: '600',
   },
   secondaryButton: {
     backgroundColor: 'transparent',
@@ -178,18 +135,17 @@ const styles = StyleSheet.create({
     borderColor: '#007AFF',
     paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 16,
+    borderRadius: 12,
     alignItems: 'center',
   },
   secondaryButtonText: {
     color: '#007AFF',
     fontSize: 18,
     fontWeight: '600',
-    letterSpacing: 0.5,
   },
   tertiaryButton: {
     backgroundColor: 'transparent',
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 32,
     alignItems: 'center',
   },
@@ -197,6 +153,5 @@ const styles = StyleSheet.create({
     color: '#999',
     fontSize: 16,
     textDecorationLine: 'underline',
-    letterSpacing: 0.3,
   },
 });
