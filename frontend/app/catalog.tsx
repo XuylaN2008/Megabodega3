@@ -20,7 +20,7 @@ import { apiService, Product, Category } from '../services/api';
 import { MegaBodegaLanguageSelector } from '../components/MegaBodegaLanguageSelector';
 
 export default function CatalogScreen() {
-  const { t } = useMegaBodegaI18n();
+  const { t, language } = useMegaBodegaI18n();
   const { addItem, getItemQuantity } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
