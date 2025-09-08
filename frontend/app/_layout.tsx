@@ -2,11 +2,11 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../contexts/AuthContext';
-import { SimpleI18nProvider } from '../contexts/SimpleI18nContext';
+import { MegaBodegaI18nProvider } from '../contexts/MegaBodegaI18nContext';
 
 export default function RootLayout() {
   return (
-    <SimpleI18nProvider>
+    <MegaBodegaI18nProvider>
       <AuthProvider>
         <StatusBar style="light" />
         <Stack
@@ -16,13 +16,17 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" />
+          <Stack.Screen name="splash" />
           <Stack.Screen name="auth/login" />
           <Stack.Screen name="auth/register" />
           <Stack.Screen name="browse/index" />
           <Stack.Screen name="products" />
           <Stack.Screen name="dashboard" />
+          <Stack.Screen name="customer/home" />
+          <Stack.Screen name="courier/dashboard" />
+          <Stack.Screen name="staff/dashboard" />
         </Stack>
       </AuthProvider>
-    </SimpleI18nProvider>
+    </MegaBodegaI18nProvider>
   );
 }
