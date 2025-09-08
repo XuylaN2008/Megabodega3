@@ -8,6 +8,8 @@ class UserRole(str, Enum):
     CUSTOMER = "customer"
     STORE_ADMIN = "store_admin"
     DELIVERY = "delivery"
+    COURIER = "courier"
+    STAFF = "staff"
 
 class OrderStatus(str, Enum):
     PENDING = "pending"
