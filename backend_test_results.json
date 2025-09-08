@@ -1,0 +1,127 @@
+{
+  "total_tests": 17,
+  "passed": 16,
+  "failed": 1,
+  "success_rate": 94.11764705882352,
+  "results": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "message": "API is healthy and responding",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:57.669087"
+    },
+    {
+      "test": "Registration (customer)",
+      "success": true,
+      "message": "Successfully registered Mar\u00eda Gonz\u00e1lez",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:57.950241"
+    },
+    {
+      "test": "Registration (store_admin)",
+      "success": true,
+      "message": "Successfully registered Carlos Mendoza",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:58.234958"
+    },
+    {
+      "test": "Registration (delivery)",
+      "success": true,
+      "message": "Successfully registered Luis Herrera",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:58.495029"
+    },
+    {
+      "test": "Duplicate Registration",
+      "success": true,
+      "message": "Properly rejected duplicate email",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:58.505751"
+    },
+    {
+      "test": "Login (customer)",
+      "success": true,
+      "message": "Successfully logged in Mar\u00eda Gonz\u00e1lez",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:58.788611"
+    },
+    {
+      "test": "Login (store_admin)",
+      "success": true,
+      "message": "Successfully logged in Carlos Mendoza",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.032698"
+    },
+    {
+      "test": "Login (delivery)",
+      "success": true,
+      "message": "Successfully logged in Luis Herrera",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.315445"
+    },
+    {
+      "test": "Invalid Login (wrong password)",
+      "success": true,
+      "message": "Properly rejected invalid credentials",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.559363"
+    },
+    {
+      "test": "Invalid Login (nonexistent user)",
+      "success": true,
+      "message": "Properly rejected invalid credentials",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.569625"
+    },
+    {
+      "test": "Get Current User (customer)",
+      "success": true,
+      "message": "Successfully retrieved user info for Mar\u00eda Gonz\u00e1lez",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.621090"
+    },
+    {
+      "test": "Get Current User (store_admin)",
+      "success": true,
+      "message": "Successfully retrieved user info for Carlos Mendoza",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.631714"
+    },
+    {
+      "test": "Get Current User (delivery)",
+      "success": true,
+      "message": "Successfully retrieved user info for Luis Herrera",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.640962"
+    },
+    {
+      "test": "Unauthorized Access",
+      "success": false,
+      "message": "Should return 401, got 403",
+      "details": "{\"detail\":\"Not authenticated\"}",
+      "timestamp": "2025-09-08T17:11:59.690360"
+    },
+    {
+      "test": "Password Hashing",
+      "success": true,
+      "message": "Passwords are properly hashed (verified via login functionality)",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.690419"
+    },
+    {
+      "test": "Role-based Access (Store Admin)",
+      "success": true,
+      "message": "Store admin can create stores",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.760412"
+    },
+    {
+      "test": "Role-based Access (Customer Restriction)",
+      "success": true,
+      "message": "Customer properly denied store creation",
+      "details": null,
+      "timestamp": "2025-09-08T17:11:59.770017"
+    }
+  ]
+}
