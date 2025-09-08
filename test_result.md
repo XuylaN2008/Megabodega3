@@ -297,6 +297,66 @@ backend:
           agent: "testing"
           comment: "Payment service integration with Stripe working correctly. Fixed payment packages prevent amount manipulation, proper transaction logging to database, session status tracking, and webhook event handling all functioning properly. Stripe API integration via emergentintegrations library working as expected."
 
+  - task: "Invitation System for Courier/Staff Registration"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/invitation_system.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented complete invitation system with code generation, validation, and usage tracking. Added preset codes: COURIER01, STAFF001, ADMIN123. Integration with user registration endpoint completed."
+
+  - task: "Enhanced User Registration with Invitation Codes" 
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Updated user registration endpoint to require and validate invitation codes for courier and staff roles. Customer registration remains open. Invitation codes are marked as used after successful registration."
+
+  - task: "Location/City Filtering for Baños de Agua Santa"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added delivery area endpoints that restrict delivery to Baños de Agua Santa only. Includes location validation and predefined delivery areas (Centro, Norte, Sur)."
+
+  - task: "User Theme Management System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added theme management endpoints for dark/light theme preferences. Users can get and update their theme preferences, stored in MongoDB."
+
+  - task: "Invitation Management Endpoints"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added admin endpoints for invitation code generation, validation, listing, and deletion. Only store admins can manage invitation codes."
+
 frontend:
   - task: "MegaBodega Internationalization System"
     implemented: true
