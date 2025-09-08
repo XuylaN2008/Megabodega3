@@ -651,6 +651,243 @@ class BackendTester:
             self.log_test("CORS Configuration", False, "Request failed", str(e))
             return False
     
+    def test_payment_packages_endpoint(self):
+        """Test GET /api/payments/packages endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/payments/packages")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "packages" in data and "currency" in data:
+                    packages = data["packages"]
+                    expected_packages = ["small", "medium", "large", "delivery_fee"]
+                    
+                    # Verify all expected packages exist
+                    if all(pkg in packages for pkg in expected_packages):
+                        # Verify package structure
+                        sample_package = packages["small"]
+                        required_fields = ["amount", "name", "description"]
+                        
+                        if all(field in sample_package for field in required_fields):
+                            self.log_test(
+                                "Payment Packages", 
+                                True, 
+                                f"Successfully retrieved {len(packages)} payment packages with correct structure"
+                            )
+                            return True
+                        else:
+                            self.log_test("Payment Packages", False, "Package missing required fields", sample_package)
+                            return False
+                    else:
+                        self.log_test("Payment Packages", False, f"Missing expected packages. Got: {list(packages.keys())}")
+                        return False
+                else:
+                    self.log_test("Payment Packages", False, "Response missing 'packages' or 'currency' field", data)
+                    return False
+            else:
+                self.log_test("Payment Packages", False, f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Packages", False, "Request failed", str(e))
+            return False
+    
+    def test_payment_checkout_session_unauthenticated(self):
+        """Test POST /api/payments/checkout/session without authentication"""
+        checkout_data = {
+            "package_id": "small",
+            "origin_url": "https://megabodega-dev.preview.emergentagent.com",
+            "metadata": {"test": "unauthenticated_checkout"}
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/payments/checkout/session",
+                json=checkout_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["url", "session_id", "amount", "package"]
+                
+                if all(field in data for field in required_fields):
+                    # Verify the response data
+                    if data["amount"] == 5.0 and "stripe.com" in data["url"]:
+                        self.log_test(
+                            "Payment Checkout (Unauthenticated)", 
+                            True, 
+                            f"Successfully created checkout session: {data['session_id']}"
+                        )
+                        # Store session_id for status testing
+                        self.test_session_id = data["session_id"]
+                        return True
+                    else:
+                        self.log_test("Payment Checkout (Unauthenticated)", False, "Invalid response data", data)
+                        return False
+                else:
+                    self.log_test("Payment Checkout (Unauthenticated)", False, "Missing required fields in response", data)
+                    return False
+            else:
+                self.log_test("Payment Checkout (Unauthenticated)", False, f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Checkout (Unauthenticated)", False, "Request failed", str(e))
+            return False
+    
+    def test_payment_checkout_session_authenticated(self):
+        """Test POST /api/payments/checkout/session with authentication"""
+        if "customer" not in self.auth_tokens:
+            self.log_test("Payment Checkout (Authenticated)", False, "No customer token available for testing")
+            return False
+        
+        checkout_data = {
+            "package_id": "medium",
+            "origin_url": "https://megabodega-dev.preview.emergentagent.com",
+            "metadata": {"test": "authenticated_checkout"}
+        }
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.auth_tokens['customer']['token']}",
+                "Content-Type": "application/json"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/payments/checkout/session",
+                json=checkout_data,
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["url", "session_id", "amount", "package"]
+                
+                if all(field in data for field in required_fields):
+                    # Verify the response data for medium package
+                    if data["amount"] == 10.0 and "stripe.com" in data["url"]:
+                        self.log_test(
+                            "Payment Checkout (Authenticated)", 
+                            True, 
+                            f"Successfully created authenticated checkout session: {data['session_id']}"
+                        )
+                        # Store session_id for status testing
+                        self.test_session_id_auth = data["session_id"]
+                        return True
+                    else:
+                        self.log_test("Payment Checkout (Authenticated)", False, "Invalid response data", data)
+                        return False
+                else:
+                    self.log_test("Payment Checkout (Authenticated)", False, "Missing required fields in response", data)
+                    return False
+            else:
+                self.log_test("Payment Checkout (Authenticated)", False, f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Checkout (Authenticated)", False, "Request failed", str(e))
+            return False
+    
+    def test_payment_checkout_invalid_package(self):
+        """Test POST /api/payments/checkout/session with invalid package"""
+        checkout_data = {
+            "package_id": "invalid_package",
+            "origin_url": "https://megabodega-dev.preview.emergentagent.com"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/payments/checkout/session",
+                json=checkout_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 400:
+                data = response.json()
+                if "Invalid package_id" in data.get("detail", ""):
+                    self.log_test("Payment Checkout (Invalid Package)", True, "Properly rejected invalid package_id")
+                    return True
+                else:
+                    self.log_test("Payment Checkout (Invalid Package)", False, "Wrong error message", data)
+                    return False
+            else:
+                self.log_test("Payment Checkout (Invalid Package)", False, f"Should return 400, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Checkout (Invalid Package)", False, "Request failed", str(e))
+            return False
+    
+    def test_payment_checkout_status(self):
+        """Test GET /api/payments/checkout/status/{session_id}"""
+        # Use session_id from previous test if available
+        session_id = getattr(self, 'test_session_id', 'test_session_id_123')
+        
+        try:
+            response = self.session.get(f"{self.base_url}/payments/checkout/status/{session_id}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["session_id", "status", "payment_status", "amount_total", "currency"]
+                
+                if all(field in data for field in required_fields):
+                    self.log_test(
+                        "Payment Checkout Status", 
+                        True, 
+                        f"Successfully retrieved status for session {data['session_id']}: {data['status']}"
+                    )
+                    return True
+                else:
+                    self.log_test("Payment Checkout Status", False, "Missing required fields in response", data)
+                    return False
+            elif response.status_code == 404:
+                # This is expected for test session IDs
+                self.log_test("Payment Checkout Status", True, "Properly returned 404 for non-existent session")
+                return True
+            else:
+                self.log_test("Payment Checkout Status", False, f"HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Checkout Status", False, "Request failed", str(e))
+            return False
+    
+    def test_payment_webhook_endpoint(self):
+        """Test POST /api/payments/webhook/stripe endpoint"""
+        # Test webhook endpoint with invalid signature (should fail gracefully)
+        webhook_data = {
+            "id": "evt_test_webhook",
+            "object": "event",
+            "type": "checkout.session.completed"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/payments/webhook/stripe",
+                json=webhook_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            # Webhook should return 400 for missing/invalid signature
+            if response.status_code == 400:
+                data = response.json()
+                if "signature" in data.get("detail", "").lower() or "webhook" in data.get("error", "").lower():
+                    self.log_test("Payment Webhook", True, "Webhook endpoint properly validates Stripe signature")
+                    return True
+                else:
+                    self.log_test("Payment Webhook", False, "Unexpected error message", data)
+                    return False
+            else:
+                self.log_test("Payment Webhook", False, f"Expected 400 for invalid signature, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Payment Webhook", False, "Request failed", str(e))
+            return False
+    
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Backend API Tests for Ecuador Food Delivery App")
