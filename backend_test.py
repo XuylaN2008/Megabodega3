@@ -890,7 +890,7 @@ class BackendTester:
     
     def run_all_tests(self):
         """Run all backend tests"""
-        print("🚀 Starting Backend API Tests for Ecuador Food Delivery App")
+        print("🚀 Starting Backend API Tests for MegaBodega Delivery App")
         print("=" * 60)
         
         # Test sequence
@@ -907,7 +907,13 @@ class BackendTester:
             ("Unauthorized Access", self.test_unauthorized_access),
             ("Password Hashing", self.test_password_hashing),
             ("Role-based Access", self.test_role_based_access),
-            ("CORS Configuration", self.test_cors_configuration)
+            ("CORS Configuration", self.test_cors_configuration),
+            ("Payment Packages", self.test_payment_packages_endpoint),
+            ("Payment Checkout (Unauthenticated)", self.test_payment_checkout_session_unauthenticated),
+            ("Payment Checkout (Authenticated)", self.test_payment_checkout_session_authenticated),
+            ("Payment Checkout (Invalid Package)", self.test_payment_checkout_invalid_package),
+            ("Payment Checkout Status", self.test_payment_checkout_status),
+            ("Payment Webhook", self.test_payment_webhook_endpoint)
         ]
         
         passed = 0
