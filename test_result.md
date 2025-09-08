@@ -299,15 +299,18 @@ backend:
 
   - task: "Invitation System for Courier/Staff Registration"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/invitation_system.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented complete invitation system with code generation, validation, and usage tracking. Added preset codes: COURIER01, STAFF001, ADMIN123. Integration with user registration endpoint completed."
+        - working: true
+          agent: "testing"
+          comment: "Invitation system working correctly. Preset codes COURIER01, STAFF001, ADMIN123 are properly initialized and validated. Code generation, validation, and usage tracking all functional. Fixed UserRole enum to include 'courier' and 'staff' roles. Note: Codes are single-use as designed, so they get marked as used after successful registration."
 
   - task: "Enhanced User Registration with Invitation Codes" 
     implemented: true
