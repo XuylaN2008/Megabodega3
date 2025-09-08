@@ -238,6 +238,9 @@ const styles = StyleSheet.create({
     right: 24,
     zIndex: 10,
   },
+  languageSelector: {
+    minWidth: 120,
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
