@@ -12,6 +12,13 @@ interface Translations {
   // Auth
   auth: {
     signInWithGoogle: string;
+    login: string;
+    register: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    fullName: string;
+    phone: string;
     selectRole: string;
     customer: string;
     courier: string;
@@ -20,6 +27,15 @@ interface Translations {
     courierDesc: string;
     staffDesc: string;
     signOut: string;
+    loginSuccess: string;
+    loginError: string;
+    registerSuccess: string;
+    registerError: string;
+    logoutConfirm: string;
+    forgotPassword: string;
+    createAccount: string;
+    alreadyHaveAccount: string;
+    noAccount: string;
   };
   // Navigation
   nav: {
@@ -29,16 +45,38 @@ interface Translations {
     orders: string;
     profile: string;
     admin: string;
+    back: string;
+    search: string;
+    filter: string;
+    sort: string;
   };
   // Customer
   customer: {
     categories: string;
     searchProducts: string;
     addToCart: string;
+    removeFromCart: string;
     checkout: string;
     payWithStripe: string;
     orderStatus: string;
     orderHistory: string;
+    myOrders: string;
+    favoriteProducts: string;
+    recentOrders: string;
+    quickOrder: string;
+    deliveryAddress: string;
+    paymentMethod: string;
+    orderSummary: string;
+    subtotal: string;
+    deliveryFee: string;
+    discount: string;
+    itemsInCart: string;
+    emptyCart: string;
+    addToFavorites: string;
+    viewDetails: string;
+    productNotAvailable: string;
+    outOfStock: string;
+    inStock: string;
   };
   // Courier
   courier: {
@@ -48,6 +86,20 @@ interface Translations {
     markDelivered: string;
     route: string;
     earnings: string;
+    todayEarnings: string;
+    weeklyEarnings: string;
+    totalDeliveries: string;
+    averageRating: string;
+    onlineStatus: string;
+    offline: string;
+    online: string;
+    currentDelivery: string;
+    pickupLocation: string;
+    deliveryLocation: string;
+    customerInfo: string;
+    callCustomer: string;
+    reportIssue: string;
+    completedDeliveries: string;
   };
   // Staff
   staff: {
@@ -57,6 +109,30 @@ interface Translations {
     orders: string;
     analytics: string;
     inventory: string;
+    productManagement: string;
+    orderManagement: string;
+    salesAnalytics: string;
+    lowStock: string;
+    restock: string;
+    productName: string;
+    productPrice: string;
+    productCategory: string;
+    productDescription: string;
+    stockQuantity: string;
+    saveProduct: string;
+    deleteProduct: string;
+    confirmDelete: string;
+    orderReceived: string;
+    orderPreparing: string;
+    orderReady: string;
+    orderDelivered: string;
+    markAsReady: string;
+    viewOrderDetails: string;
+    dailySales: string;
+    weeklySales: string;
+    monthlySales: string;
+    topProducts: string;
+    salesReport: string;
   };
   // Common
   common: {
@@ -70,12 +146,38 @@ interface Translations {
     back: string;
     next: string;
     done: string;
+    confirm: string;
+    yes: string;
+    no: string;
+    retry: string;
+    refresh: string;
+    close: string;
+    open: string;
     price: string;
     quantity: string;
     total: string;
     address: string;
     phone: string;
     email: string;
+    name: string;
+    description: string;
+    category: string;
+    store: string;
+    date: string;
+    time: string;
+    status: string;
+    rating: string;
+    review: string;
+    photo: string;
+    video: string;
+    file: string;
+    upload: string;
+    download: string;
+    share: string;
+    copy: string;
+    paste: string;
+    cut: string;
+    selectAll: string;
   };
   // Languages
   languages: {
@@ -83,6 +185,73 @@ interface Translations {
     english: string;
     russian: string;
     changeLanguage: string;
+  };
+  // Cart & Checkout
+  cart: {
+    title: string;
+    empty: string;
+    emptyMessage: string;
+    continueShopping: string;
+    proceedToCheckout: string;
+    itemsCount: string;
+    remove: string;
+    moveToWishlist: string;
+    updateQuantity: string;
+    pricePerItem: string;
+    subtotal: string;
+    checkoutTitle: string;
+    deliveryInfo: string;
+    paymentInfo: string;
+    orderReview: string;
+    placeOrder: string;
+    processing: string;
+    orderPlaced: string;
+    orderPlacedMessage: string;
+    paymentFailed: string;
+    paymentFailedMessage: string;
+    retryPayment: string;
+  };
+  // Profile
+  profile: {
+    title: string;
+    personalInfo: string;
+    accountSettings: string;
+    orderHistory: string;
+    paymentMethods: string;
+    addresses: string;
+    notifications: string;
+    help: string;
+    about: string;
+    termsOfService: string;
+    privacyPolicy: string;
+    logout: string;
+    editProfile: string;
+    changePassword: string;
+    deleteAccount: string;
+    language: string;
+    theme: string;
+    pushNotifications: string;
+    emailNotifications: string;
+    smsNotifications: string;
+    contactSupport: string;
+    faq: string;
+    version: string;
+  };
+  // Errors
+  errors: {
+    networkError: string;
+    serverError: string;
+    notFound: string;
+    unauthorized: string;
+    forbidden: string;
+    badRequest: string;
+    timeout: string;
+    unknownError: string;
+    validationError: string;
+    paymentError: string;
+    locationError: string;
+    cameraError: string;
+    storageError: string;
   };
 }
 
