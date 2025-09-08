@@ -8,6 +8,7 @@ interface Translations {
     title: string;
     subtitle: string;
     slogan: string;
+    greeting: string;
   };
   // Auth
   auth: {
