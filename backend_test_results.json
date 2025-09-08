@@ -1,239 +1,239 @@
 {
   "total_tests": 33,
-  "passed": 32,
-  "failed": 1,
-  "success_rate": 96.96969696969697,
+  "passed": 33,
+  "failed": 0,
+  "success_rate": 100.0,
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "API is healthy and responding",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.755492"
+      "timestamp": "2025-09-08T19:15:48.530790"
     },
     {
       "test": "Product Catalog (Products)",
       "success": true,
       "message": "Successfully retrieved 11 products",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.771198"
+      "timestamp": "2025-09-08T19:15:48.545997"
     },
     {
       "test": "Product Structure",
       "success": true,
       "message": "Products have all required fields",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.771234"
+      "timestamp": "2025-09-08T19:15:48.546049"
     },
     {
       "test": "Product Catalog (Categories)",
       "success": true,
       "message": "Successfully retrieved 3 categories: Comida Ecuatoriana, Bebidas, Frutas Tropicales",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.786609"
+      "timestamp": "2025-09-08T19:15:48.598215"
     },
     {
       "test": "Product Catalog (Stores)",
-      "success": false,
-      "message": "Expected 2 stores, got 3",
+      "success": true,
+      "message": "Successfully retrieved 4 stores including: Cocina de la Mam\u00e1, Frutas del Tr\u00f3pico",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.801731"
+      "timestamp": "2025-09-08T19:15:48.613063"
     },
     {
       "test": "Product Filtering (Category)",
       "success": true,
       "message": "Successfully filtered 4 products by ecuadorian food category",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.811805"
+      "timestamp": "2025-09-08T19:15:48.625504"
     },
     {
       "test": "Product Filtering (Store)",
       "success": true,
       "message": "Successfully filtered 6 products by Cocina de la Mam\u00e1 store",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.828901"
+      "timestamp": "2025-09-08T19:15:48.638978"
     },
     {
       "test": "Product Filtering (Combined)",
       "success": true,
       "message": "Successfully filtered 5 products by fruits category and tropical fruits store",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.839640"
+      "timestamp": "2025-09-08T19:15:48.654231"
     },
     {
       "test": "Google OAuth (Login Redirect)",
       "success": true,
       "message": "Google login endpoint properly redirects to auth service",
       "details": null,
-      "timestamp": "2025-09-08T19:15:23.847333"
+      "timestamp": "2025-09-08T19:15:48.664271"
     },
     {
       "test": "Google OAuth (Session Auth)",
       "success": true,
       "message": "Google session endpoint properly rejects invalid session",
       "details": null,
-      "timestamp": "2025-09-08T19:15:24.000678"
+      "timestamp": "2025-09-08T19:15:48.830107"
     },
     {
       "test": "Registration (customer)",
       "success": true,
       "message": "Successfully registered Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T19:15:24.249777"
+      "timestamp": "2025-09-08T19:15:49.075788"
     },
     {
       "test": "Registration (store_admin)",
       "success": true,
       "message": "Successfully registered Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T19:15:24.492545"
+      "timestamp": "2025-09-08T19:15:49.321337"
     },
     {
       "test": "Registration (delivery)",
       "success": true,
       "message": "Successfully registered Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T19:15:24.829273"
+      "timestamp": "2025-09-08T19:15:49.567498"
     },
     {
       "test": "Duplicate Registration",
       "success": true,
       "message": "Properly rejected duplicate email",
       "details": null,
-      "timestamp": "2025-09-08T19:15:24.840003"
+      "timestamp": "2025-09-08T19:15:49.619479"
     },
     {
       "test": "Login (customer)",
       "success": true,
       "message": "Successfully logged in Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.080402"
+      "timestamp": "2025-09-08T19:15:49.903839"
     },
     {
       "test": "Login (store_admin)",
       "success": true,
       "message": "Successfully logged in Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.321968"
+      "timestamp": "2025-09-08T19:15:50.147448"
     },
     {
       "test": "Login (delivery)",
       "success": true,
       "message": "Successfully logged in Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.604946"
+      "timestamp": "2025-09-08T19:15:50.390496"
     },
     {
       "test": "Invalid Login (wrong password)",
       "success": true,
       "message": "Properly rejected invalid credentials",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.851549"
+      "timestamp": "2025-09-08T19:15:50.632994"
     },
     {
       "test": "Invalid Login (nonexistent user)",
       "success": true,
       "message": "Properly rejected invalid credentials",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.862212"
+      "timestamp": "2025-09-08T19:15:50.645708"
     },
     {
       "test": "Get Current User (customer)",
       "success": true,
       "message": "Successfully retrieved user info for Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.913254"
+      "timestamp": "2025-09-08T19:15:50.657906"
     },
     {
       "test": "Get Current User (store_admin)",
       "success": true,
       "message": "Successfully retrieved user info for Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.964448"
+      "timestamp": "2025-09-08T19:15:50.734232"
     },
     {
       "test": "Get Current User (delivery)",
       "success": true,
       "message": "Successfully retrieved user info for Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.974370"
+      "timestamp": "2025-09-08T19:15:50.746620"
     },
     {
       "test": "Unauthorized Access",
       "success": true,
       "message": "Properly rejected request without token",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.982868"
+      "timestamp": "2025-09-08T19:15:50.798360"
     },
     {
       "test": "Password Hashing",
       "success": true,
       "message": "Passwords are properly hashed (verified via login functionality)",
       "details": null,
-      "timestamp": "2025-09-08T19:15:25.982914"
+      "timestamp": "2025-09-08T19:15:50.798426"
     },
     {
       "test": "Role-based Access (Store Admin)",
       "success": true,
       "message": "Store admin can create stores",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.036207"
+      "timestamp": "2025-09-08T19:15:50.812507"
     },
     {
       "test": "Role-based Access (Customer Restriction)",
       "success": true,
       "message": "Customer properly denied store creation",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.088363"
+      "timestamp": "2025-09-08T19:15:50.864873"
     },
     {
       "test": "CORS Configuration",
       "success": true,
       "message": "CORS headers properly configured",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.097351"
+      "timestamp": "2025-09-08T19:15:50.874816"
     },
     {
       "test": "Payment Packages",
       "success": true,
       "message": "Successfully retrieved 4 payment packages with correct structure",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.104947"
+      "timestamp": "2025-09-08T19:15:50.926482"
     },
     {
       "test": "Payment Checkout (Unauthenticated)",
       "success": true,
-      "message": "Successfully created checkout session: cs_test_a1EydZbpEkmKdGBT1GOhKWSOrRT40ajZ2QjqzZugtz776K0aLoe0xLaVWn",
+      "message": "Successfully created checkout session: cs_test_a1sZBfjt3PvE1KQ42SAOyPYK5eXk5JPNeyRRFT559PKQGcbpt5ZYU6JFUr",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.549886"
+      "timestamp": "2025-09-08T19:15:51.370637"
     },
     {
       "test": "Payment Checkout (Authenticated)",
       "success": true,
-      "message": "Successfully created authenticated checkout session: cs_test_a1KKDiawSTqfYovRgl6dcImUwVBXLv1dEZ8SRmsuEu85PDdFCjAbaItFkN",
+      "message": "Successfully created authenticated checkout session: cs_test_a15TKVRqS1DC4NLtCqrL7HHUUv4602tVLvjGdrhdYDsHmGbvWAduVLzQ2w",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.971016"
+      "timestamp": "2025-09-08T19:15:51.744179"
     },
     {
       "test": "Payment Checkout (Invalid Package)",
       "success": true,
       "message": "Properly rejected invalid package_id",
       "details": null,
-      "timestamp": "2025-09-08T19:15:26.980753"
+      "timestamp": "2025-09-08T19:15:51.756142"
     },
     {
       "test": "Payment Checkout Status",
       "success": true,
-      "message": "Successfully retrieved status for session cs_test_a1EydZbpEkmKdGBT1GOhKWSOrRT40ajZ2QjqzZugtz776K0aLoe0xLaVWn: open",
+      "message": "Successfully retrieved status for session cs_test_a1sZBfjt3PvE1KQ42SAOyPYK5eXk5JPNeyRRFT559PKQGcbpt5ZYU6JFUr: open",
       "details": null,
-      "timestamp": "2025-09-08T19:15:27.191601"
+      "timestamp": "2025-09-08T19:15:52.017926"
     },
     {
       "test": "Payment Webhook",
       "success": true,
       "message": "Webhook endpoint properly validates Stripe signature",
       "details": null,
-      "timestamp": "2025-09-08T19:15:27.199469"
+      "timestamp": "2025-09-08T19:15:52.027974"
     }
   ]
 }
