@@ -113,6 +113,16 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
 
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>o</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Google Login */}
+            <GoogleLoginButton text="Continuar con Google" />
+
             {/* Register Link */}
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>{t('auth.noAccount')}</Text>
