@@ -66,10 +66,10 @@ export default function WelcomeScreen() {
             </TouchableOpacity>
           </Link>
 
-          <Link href="/catalog" asChild>
+          <Link href="/products" asChild>
             <TouchableOpacity style={styles.catalogButton}>
               <Text style={styles.catalogButtonText}>
-                📦 Каталог товаров
+                🛒 Каталог товаров
               </Text>
             </TouchableOpacity>
           </Link>
