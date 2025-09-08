@@ -46,6 +46,7 @@ async def create_checkout_session(
             package_id=checkout_request.package_id,
             origin_url=checkout_request.origin_url,
             request=request,
+            db=db,
             user_id=user_id,
             user_email=user_email,
             metadata=metadata
