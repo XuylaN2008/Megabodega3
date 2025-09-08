@@ -150,8 +150,8 @@ async def delete_invitation_code(
 
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=AuthResponse)
-async def register_user(user_data: UserCreate, db = Depends(get_database)):
-    """Register a new user"""
+async def register_user(user_data: UserCreateWithInvitation, db = Depends(get_database)):
+    """Register a new user with invitation code validation for courier and staff"""
     # Check if user already exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
@@ -160,11 +160,59 @@ async def register_user(user_data: UserCreate, db = Depends(get_database)):
             detail="Email already registered"
         )
     
+    # Validate invitation code for courier and staff roles
+    if user_data.role in ['courier', 'staff']:
+        if not user_data.invitation_code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invitation code is required for courier and staff registration"
+            )
+        
+        try:
+            invitation_system = InvitationSystem()
+            is_valid = await invitation_system.validate_invitation_code(
+                code=user_data.invitation_code,
+                role=user_data.role
+            )
+            
+            if not is_valid:
+                invitation_system.client.close()
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid or expired invitation code"
+                )
+            
+            # Mark invitation code as used
+            await invitation_system.use_invitation_code(
+                code=user_data.invitation_code,
+                used_by=user_data.email
+            )
+            invitation_system.client.close()
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to validate invitation code"
+            )
+    
     # Hash password
     hashed_password = get_password_hash(user_data.password)
     
-    # Create user document
-    user_dict = user_data.dict()
+    # Create user document (convert to the original UserCreate format)
+    user_create_data = {
+        "email": user_data.email,
+        "full_name": user_data.full_name,
+        "phone": user_data.phone,
+        "role": UserRole(user_data.role),
+        "password": user_data.password,
+        "store_id": user_data.store_id,
+        "delivery_zone": user_data.delivery_zone
+    }
+    
+    user_create = UserCreate(**user_create_data)
+    user_dict = user_create.dict()
     user_dict.pop("password", None)  # Remove plain password safely
     
     user = User(**user_dict)
