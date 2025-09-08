@@ -27,7 +27,8 @@
         "backgroundColor": "#1a1a1a"
       },
       "package": "com.megabodega.delivery",
-      "versionCode": 1
+      "versionCode": 1,
+      "jsEngine": "jsc"
     },
     "web": {
       "favicon": "./assets/favicon.png",
