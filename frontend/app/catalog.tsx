@@ -74,6 +74,7 @@ export default function CatalogScreen() {
   };
 
   const handleAddToCart = (product: Product) => {
+    console.log('Adding to cart:', product.name); // Debug log
     addItem({
       id: product.id,
       name: product.name,
@@ -81,6 +82,28 @@ export default function CatalogScreen() {
       image: product.image,
     });
     Alert.alert(t('common.success'), `${product.name} agregado al carrito`);
+  };
+
+  const getProductName = (product: Product) => {
+    switch (language) {
+      case 'en':
+        return (product as any).name_en || product.name;
+      case 'ru':
+        return (product as any).name_ru || product.name;
+      default:
+        return product.name;
+    }
+  };
+
+  const getProductDescription = (product: Product) => {
+    switch (language) {
+      case 'en':
+        return (product as any).description_en || product.description;
+      case 'ru':
+        return (product as any).description_ru || product.description;
+      default:
+        return product.description;
+    }
   };
 
   const renderProductCard = (product: Product) => (
