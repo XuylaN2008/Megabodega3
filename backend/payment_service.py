@@ -31,9 +31,6 @@ class PaymentService:
         if not self.stripe_api_key:
             raise ValueError("STRIPE_API_KEY environment variable is required")
         
-        self.db = get_database()
-        self.collection = self.db.payment_transactions
-        
     def _get_stripe_checkout(self, request: Request) -> StripeCheckout:
         """Initialize Stripe checkout with webhook URL"""
         host_url = str(request.base_url).rstrip('/')
