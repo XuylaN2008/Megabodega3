@@ -55,24 +55,27 @@ class BackendTester:
     
     def test_user_registration(self):
         """Test user registration for all roles"""
+        import time
+        timestamp = str(int(time.time()))
+        
         test_users = [
             {
                 "role": "customer",
-                "email": "maria.gonzalez@gmail.com",
+                "email": f"maria.gonzalez.{timestamp}@gmail.com",
                 "full_name": "María González",
                 "phone": "+593987654321",
                 "password": "SecurePass123!"
             },
             {
                 "role": "store_admin", 
-                "email": "carlos.restaurant@gmail.com",
+                "email": f"carlos.restaurant.{timestamp}@gmail.com",
                 "full_name": "Carlos Mendoza",
                 "phone": "+593912345678",
                 "password": "AdminPass456!"
             },
             {
                 "role": "delivery",
-                "email": "luis.delivery@gmail.com", 
+                "email": f"luis.delivery.{timestamp}@gmail.com", 
                 "full_name": "Luis Herrera",
                 "phone": "+593998765432",
                 "password": "DeliveryPass789!",
@@ -96,7 +99,9 @@ class BackendTester:
                         # Store token for later tests
                         self.auth_tokens[user_data["role"]] = {
                             "token": data["access_token"],
-                            "user": data["user"]
+                            "user": data["user"],
+                            "email": user_data["email"],
+                            "password": user_data["password"]
                         }
                         self.log_test(
                             f"Registration ({user_data['role']})", 
