@@ -1437,7 +1437,7 @@ class BackendTester:
         print("🚀 Starting Backend API Tests for MegaBodega Delivery App")
         print("=" * 60)
         
-        # Test sequence
+        # Test sequence - NEW PEREKRESTOK FEATURES FIRST
         tests = [
             ("Health Check", self.test_health_check),
             ("Product Catalog Endpoints", self.test_product_catalog_endpoints),
@@ -1457,7 +1457,13 @@ class BackendTester:
             ("Payment Checkout (Authenticated)", self.test_payment_checkout_session_authenticated),
             ("Payment Checkout (Invalid Package)", self.test_payment_checkout_invalid_package),
             ("Payment Checkout Status", self.test_payment_checkout_status),
-            ("Payment Webhook", self.test_payment_webhook_endpoint)
+            ("Payment Webhook", self.test_payment_webhook_endpoint),
+            # NEW PEREKRESTOK FEATURES
+            ("Invitation Code Validation", self.test_invitation_code_validation),
+            ("Enhanced User Registration with Invitations", self.test_enhanced_user_registration_with_invitations),
+            ("Location Delivery Areas", self.test_location_delivery_areas),
+            ("User Theme Management", self.test_user_theme_management),
+            ("Invitation Management Endpoints", self.test_invitation_management_endpoints)
         ]
         
         passed = 0
