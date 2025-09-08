@@ -25,20 +25,6 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const { t } = useI18n();
 
-  // Animation values
-  const headerAnimation = useSharedValue(0);
-  const formAnimation = useSharedValue(0);
-  const buttonAnimation = useSharedValue(0);
-  const linkAnimation = useSharedValue(0);
-
-  useEffect(() => {
-    // Entrance animations
-    headerAnimation.value = withDelay(100, withSpring(1, { damping: 15, stiffness: 200 }));
-    formAnimation.value = withDelay(300, withSpring(1, { damping: 15, stiffness: 200 }));
-    buttonAnimation.value = withDelay(500, withSpring(1, { damping: 15, stiffness: 200 }));
-    linkAnimation.value = withDelay(700, withSpring(1, { damping: 15, stiffness: 200 }));
-  }, []);
-
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert(t('common.error'), 'Por favor completa todos los campos');
