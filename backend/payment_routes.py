@@ -79,7 +79,7 @@ async def stripe_webhook(request: Request, db = Depends(get_database)):
     """Handle Stripe webhook events"""
     
     try:
-        result = await payment_service.handle_webhook(request)
+        result = await payment_service.handle_webhook(request, db)
         return JSONResponse(content=result, status_code=200)
         
     except HTTPException:
