@@ -25,7 +25,8 @@ async def get_payment_packages():
 async def create_checkout_session(
     checkout_request: CheckoutRequest,
     request: Request,
-    current_user = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional),
+    db = Depends(get_database)
 ):
     """Create a Stripe checkout session for a fixed package"""
     
