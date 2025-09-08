@@ -180,18 +180,12 @@ class BackendTester:
         """Test user login functionality"""
         login_success = True
         
-        # Test login for each registered user
-        test_logins = [
-            {"email": "maria.gonzalez@gmail.com", "password": "SecurePass123!", "role": "customer"},
-            {"email": "carlos.restaurant@gmail.com", "password": "AdminPass456!", "role": "store_admin"},
-            {"email": "luis.delivery@gmail.com", "password": "DeliveryPass789!", "role": "delivery"}
-        ]
-        
-        for login_data in test_logins:
+        # Test login for each registered user using stored credentials
+        for role, auth_data in self.auth_tokens.items():
             try:
                 response = self.session.post(
                     f"{self.base_url}/auth/login",
-                    json={"email": login_data["email"], "password": login_data["password"]},
+                    json={"email": auth_data["email"], "password": auth_data["password"]},
                     headers={"Content-Type": "application/json"}
                 )
                 
@@ -199,27 +193,25 @@ class BackendTester:
                     data = response.json()
                     if "access_token" in data and "user" in data:
                         # Verify user role matches
-                        if data["user"]["role"] == login_data["role"]:
+                        if data["user"]["role"] == role:
                             # Update stored token
-                            self.auth_tokens[login_data["role"]] = {
-                                "token": data["access_token"],
-                                "user": data["user"]
-                            }
+                            self.auth_tokens[role]["token"] = data["access_token"]
+                            self.auth_tokens[role]["user"] = data["user"]
                             self.log_test(
-                                f"Login ({login_data['role']})", 
+                                f"Login ({role})", 
                                 True, 
                                 f"Successfully logged in {data['user']['full_name']}"
                             )
                         else:
                             self.log_test(
-                                f"Login ({login_data['role']})", 
+                                f"Login ({role})", 
                                 False, 
-                                f"Role mismatch: expected {login_data['role']}, got {data['user']['role']}"
+                                f"Role mismatch: expected {role}, got {data['user']['role']}"
                             )
                             login_success = False
                     else:
                         self.log_test(
-                            f"Login ({login_data['role']})", 
+                            f"Login ({role})", 
                             False, 
                             "Missing token or user in response", 
                             data
@@ -227,7 +219,7 @@ class BackendTester:
                         login_success = False
                 else:
                     self.log_test(
-                        f"Login ({login_data['role']})", 
+                        f"Login ({role})", 
                         False, 
                         f"HTTP {response.status_code}", 
                         response.text
@@ -236,7 +228,7 @@ class BackendTester:
                     
             except Exception as e:
                 self.log_test(
-                    f"Login ({login_data['role']})", 
+                    f"Login ({role})", 
                     False, 
                     "Request failed", 
                     str(e)
