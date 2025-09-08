@@ -183,7 +183,7 @@ class PaymentService:
         
         logger.info(f"Payment successful: {package_id} package for ${amount}")
     
-    async def handle_webhook(self, request: Request) -> Dict:
+    async def handle_webhook(self, request: Request, db) -> Dict:
         """Handle Stripe webhook events"""
         try:
             # Get raw body and signature
