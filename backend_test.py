@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://ecuador-delivery.preview.emergentagent.com/api"
+BACKEND_URL = "https://megabodega-dev.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
@@ -630,7 +630,7 @@ class BackendTester:
             response = self.session.options(
                 f"{self.base_url}/health",
                 headers={
-                    "Origin": "https://ecuador-delivery.preview.emergentagent.com",
+                    "Origin": "https://megabodega-dev.preview.emergentagent.com",
                     "Access-Control-Request-Method": "GET",
                     "Access-Control-Request-Headers": "Content-Type"
                 }
