@@ -888,6 +888,550 @@ class BackendTester:
             self.log_test("Payment Webhook", False, "Request failed", str(e))
             return False
     
+    # NEW PEREKRESTOK FEATURES TESTS
+    
+    def test_invitation_code_validation(self):
+        """Test invitation code validation endpoint"""
+        # Test preset codes validation
+        preset_codes = [
+            {"code": "COURIER01", "role": "courier"},
+            {"code": "STAFF001", "role": "staff"},
+            {"code": "ADMIN123", "role": "staff"}
+        ]
+        
+        validation_success = True
+        
+        for test_case in preset_codes:
+            try:
+                response = self.session.post(
+                    f"{self.base_url}/invitations/validate",
+                    json=test_case,
+                    headers={"Content-Type": "application/json"}
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("valid") is True:
+                        self.log_test(
+                            f"Invitation Validation ({test_case['code']})", 
+                            True, 
+                            f"Preset code {test_case['code']} is valid for {test_case['role']} role"
+                        )
+                    else:
+                        self.log_test(
+                            f"Invitation Validation ({test_case['code']})", 
+                            False, 
+                            f"Preset code {test_case['code']} should be valid", 
+                            data
+                        )
+                        validation_success = False
+                else:
+                    self.log_test(
+                        f"Invitation Validation ({test_case['code']})", 
+                        False, 
+                        f"HTTP {response.status_code}", 
+                        response.text
+                    )
+                    validation_success = False
+                    
+            except Exception as e:
+                self.log_test(
+                    f"Invitation Validation ({test_case['code']})", 
+                    False, 
+                    "Request failed", 
+                    str(e)
+                )
+                validation_success = False
+        
+        # Test invalid code
+        try:
+            response = self.session.post(
+                f"{self.base_url}/invitations/validate",
+                json={"code": "INVALID123", "role": "courier"},
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("valid") is False:
+                    self.log_test("Invitation Validation (Invalid Code)", True, "Invalid code properly rejected")
+                else:
+                    self.log_test("Invitation Validation (Invalid Code)", False, "Invalid code should be rejected", data)
+                    validation_success = False
+            else:
+                self.log_test("Invitation Validation (Invalid Code)", False, f"HTTP {response.status_code}", response.text)
+                validation_success = False
+                
+        except Exception as e:
+            self.log_test("Invitation Validation (Invalid Code)", False, "Request failed", str(e))
+            validation_success = False
+        
+        return validation_success
+    
+    def test_enhanced_user_registration_with_invitations(self):
+        """Test enhanced user registration with invitation codes"""
+        import time
+        timestamp = str(int(time.time()))
+        
+        # Test courier registration with valid invitation code
+        courier_data = {
+            "email": f"ana.courier.{timestamp}@gmail.com",
+            "full_name": "Ana Rodríguez",
+            "phone": "+593987123456",
+            "role": "courier",
+            "password": "CourierPass123!",
+            "invitation_code": "COURIER01",
+            "delivery_zone": "Baños Centro"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/auth/register",
+                json=courier_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "access_token" in data and data["user"]["role"] == "courier":
+                    self.log_test(
+                        "Enhanced Registration (Courier with Invitation)", 
+                        True, 
+                        f"Successfully registered courier {courier_data['full_name']} with invitation code"
+                    )
+                    # Store token for later tests
+                    self.auth_tokens["courier"] = {
+                        "token": data["access_token"],
+                        "user": data["user"],
+                        "email": courier_data["email"],
+                        "password": courier_data["password"]
+                    }
+                    courier_success = True
+                else:
+                    self.log_test("Enhanced Registration (Courier with Invitation)", False, "Invalid response structure", data)
+                    courier_success = False
+            else:
+                self.log_test("Enhanced Registration (Courier with Invitation)", False, f"HTTP {response.status_code}", response.text)
+                courier_success = False
+                
+        except Exception as e:
+            self.log_test("Enhanced Registration (Courier with Invitation)", False, "Request failed", str(e))
+            courier_success = False
+        
+        # Test staff registration with valid invitation code
+        staff_data = {
+            "email": f"pedro.staff.{timestamp}@gmail.com",
+            "full_name": "Pedro Morales",
+            "phone": "+593912987654",
+            "role": "staff",
+            "password": "StaffPass456!",
+            "invitation_code": "STAFF001"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/auth/register",
+                json=staff_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "access_token" in data and data["user"]["role"] == "staff":
+                    self.log_test(
+                        "Enhanced Registration (Staff with Invitation)", 
+                        True, 
+                        f"Successfully registered staff {staff_data['full_name']} with invitation code"
+                    )
+                    # Store token for later tests
+                    self.auth_tokens["staff"] = {
+                        "token": data["access_token"],
+                        "user": data["user"],
+                        "email": staff_data["email"],
+                        "password": staff_data["password"]
+                    }
+                    staff_success = True
+                else:
+                    self.log_test("Enhanced Registration (Staff with Invitation)", False, "Invalid response structure", data)
+                    staff_success = False
+            else:
+                self.log_test("Enhanced Registration (Staff with Invitation)", False, f"HTTP {response.status_code}", response.text)
+                staff_success = False
+                
+        except Exception as e:
+            self.log_test("Enhanced Registration (Staff with Invitation)", False, "Request failed", str(e))
+            staff_success = False
+        
+        # Test courier registration without invitation code (should fail)
+        courier_no_code = {
+            "email": f"bad.courier.{timestamp}@gmail.com",
+            "full_name": "Bad Courier",
+            "phone": "+593999888777",
+            "role": "courier",
+            "password": "BadPass123!"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/auth/register",
+                json=courier_no_code,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 400:
+                data = response.json()
+                if "invitation code" in data.get("detail", "").lower():
+                    self.log_test("Enhanced Registration (Courier without Invitation)", True, "Properly rejected courier registration without invitation code")
+                    no_code_success = True
+                else:
+                    self.log_test("Enhanced Registration (Courier without Invitation)", False, "Wrong error message", data)
+                    no_code_success = False
+            else:
+                self.log_test("Enhanced Registration (Courier without Invitation)", False, f"Should return 400, got {response.status_code}")
+                no_code_success = False
+                
+        except Exception as e:
+            self.log_test("Enhanced Registration (Courier without Invitation)", False, "Request failed", str(e))
+            no_code_success = False
+        
+        # Test customer registration without invitation code (should work)
+        customer_data = {
+            "email": f"sofia.customer.{timestamp}@gmail.com",
+            "full_name": "Sofía Vásquez",
+            "phone": "+593987654321",
+            "role": "customer",
+            "password": "CustomerPass789!"
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/auth/register",
+                json=customer_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "access_token" in data and data["user"]["role"] == "customer":
+                    self.log_test(
+                        "Enhanced Registration (Customer without Invitation)", 
+                        True, 
+                        f"Successfully registered customer {customer_data['full_name']} without invitation code"
+                    )
+                    customer_success = True
+                else:
+                    self.log_test("Enhanced Registration (Customer without Invitation)", False, "Invalid response structure", data)
+                    customer_success = False
+            else:
+                self.log_test("Enhanced Registration (Customer without Invitation)", False, f"HTTP {response.status_code}", response.text)
+                customer_success = False
+                
+        except Exception as e:
+            self.log_test("Enhanced Registration (Customer without Invitation)", False, "Request failed", str(e))
+            customer_success = False
+        
+        return courier_success and staff_success and no_code_success and customer_success
+    
+    def test_location_delivery_areas(self):
+        """Test location/city filtering for Baños de Agua Santa"""
+        # Test GET /api/locations/delivery-areas
+        try:
+            response = self.session.get(f"{self.base_url}/locations/delivery-areas")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "areas" in data:
+                    areas = data["areas"]
+                    expected_areas = ["Baños Centro", "Baños Norte", "Baños Sur"]
+                    area_names = [area["name"] for area in areas]
+                    
+                    # Check if all areas are in Baños de Agua Santa
+                    all_banos = all("Baños" in area["city"] for area in areas)
+                    has_expected_areas = all(any(expected in name for expected in expected_areas) for name in area_names)
+                    
+                    if all_banos and has_expected_areas:
+                        self.log_test(
+                            "Location Delivery Areas", 
+                            True, 
+                            f"Successfully retrieved {len(areas)} delivery areas for Baños de Agua Santa: {', '.join(area_names)}"
+                        )
+                        areas_success = True
+                    else:
+                        self.log_test("Location Delivery Areas", False, f"Areas not properly configured for Baños de Agua Santa: {area_names}")
+                        areas_success = False
+                else:
+                    self.log_test("Location Delivery Areas", False, "Response missing 'areas' field", data)
+                    areas_success = False
+            else:
+                self.log_test("Location Delivery Areas", False, f"HTTP {response.status_code}", response.text)
+                areas_success = False
+                
+        except Exception as e:
+            self.log_test("Location Delivery Areas", False, "Request failed", str(e))
+            areas_success = False
+        
+        # Test location validation for valid city
+        try:
+            response = self.session.get(f"{self.base_url}/locations/validate?city=Baños de Agua Santa")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("available") is True and "Baños de Agua Santa" in data.get("city", ""):
+                    self.log_test("Location Validation (Valid City)", True, "Baños de Agua Santa properly validated as available")
+                    valid_city_success = True
+                else:
+                    self.log_test("Location Validation (Valid City)", False, "Baños de Agua Santa should be available", data)
+                    valid_city_success = False
+            else:
+                self.log_test("Location Validation (Valid City)", False, f"HTTP {response.status_code}", response.text)
+                valid_city_success = False
+                
+        except Exception as e:
+            self.log_test("Location Validation (Valid City)", False, "Request failed", str(e))
+            valid_city_success = False
+        
+        # Test location validation for invalid city
+        try:
+            response = self.session.get(f"{self.base_url}/locations/validate?city=Quito")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("available") is False and "Baños de Agua Santa" in data.get("suggested_city", ""):
+                    self.log_test("Location Validation (Invalid City)", True, "Quito properly rejected with Baños de Agua Santa suggestion")
+                    invalid_city_success = True
+                else:
+                    self.log_test("Location Validation (Invalid City)", False, "Quito should be rejected", data)
+                    invalid_city_success = False
+            else:
+                self.log_test("Location Validation (Invalid City)", False, f"HTTP {response.status_code}", response.text)
+                invalid_city_success = False
+                
+        except Exception as e:
+            self.log_test("Location Validation (Invalid City)", False, "Request failed", str(e))
+            invalid_city_success = False
+        
+        return areas_success and valid_city_success and invalid_city_success
+    
+    def test_user_theme_management(self):
+        """Test user theme management system"""
+        # Use customer token if available, otherwise skip
+        if "customer" not in self.auth_tokens:
+            self.log_test("User Theme Management", False, "No customer token available for testing")
+            return False
+        
+        headers = {
+            "Authorization": f"Bearer {self.auth_tokens['customer']['token']}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test GET /api/user/theme (should return default light theme)
+        try:
+            response = self.session.get(f"{self.base_url}/user/theme", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "theme" in data and data["theme"] in ["light", "dark"]:
+                    self.log_test("Get User Theme", True, f"Successfully retrieved user theme: {data['theme']}")
+                    get_theme_success = True
+                else:
+                    self.log_test("Get User Theme", False, "Invalid theme response", data)
+                    get_theme_success = False
+            else:
+                self.log_test("Get User Theme", False, f"HTTP {response.status_code}", response.text)
+                get_theme_success = False
+                
+        except Exception as e:
+            self.log_test("Get User Theme", False, "Request failed", str(e))
+            get_theme_success = False
+        
+        # Test POST /api/user/theme (set to dark theme)
+        try:
+            response = self.session.post(
+                f"{self.base_url}/user/theme",
+                json={"theme": "dark"},
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "theme" in data and data["theme"] == "dark":
+                    self.log_test("Set User Theme (Dark)", True, "Successfully set theme to dark")
+                    set_dark_success = True
+                else:
+                    self.log_test("Set User Theme (Dark)", False, "Theme not properly set", data)
+                    set_dark_success = False
+            else:
+                self.log_test("Set User Theme (Dark)", False, f"HTTP {response.status_code}", response.text)
+                set_dark_success = False
+                
+        except Exception as e:
+            self.log_test("Set User Theme (Dark)", False, "Request failed", str(e))
+            set_dark_success = False
+        
+        # Test GET /api/user/theme again (should return dark theme)
+        try:
+            response = self.session.get(f"{self.base_url}/user/theme", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("theme") == "dark":
+                    self.log_test("Get User Theme (After Update)", True, "Theme persistence verified - dark theme retrieved")
+                    persistence_success = True
+                else:
+                    self.log_test("Get User Theme (After Update)", False, f"Expected dark theme, got {data.get('theme')}", data)
+                    persistence_success = False
+            else:
+                self.log_test("Get User Theme (After Update)", False, f"HTTP {response.status_code}", response.text)
+                persistence_success = False
+                
+        except Exception as e:
+            self.log_test("Get User Theme (After Update)", False, "Request failed", str(e))
+            persistence_success = False
+        
+        # Test invalid theme
+        try:
+            response = self.session.post(
+                f"{self.base_url}/user/theme",
+                json={"theme": "invalid_theme"},
+                headers=headers
+            )
+            
+            if response.status_code == 400:
+                self.log_test("Set User Theme (Invalid)", True, "Invalid theme properly rejected")
+                invalid_theme_success = True
+            else:
+                self.log_test("Set User Theme (Invalid)", False, f"Should return 400, got {response.status_code}")
+                invalid_theme_success = False
+                
+        except Exception as e:
+            self.log_test("Set User Theme (Invalid)", False, "Request failed", str(e))
+            invalid_theme_success = False
+        
+        return get_theme_success and set_dark_success and persistence_success and invalid_theme_success
+    
+    def test_invitation_management_endpoints(self):
+        """Test invitation management endpoints (admin only)"""
+        # Use store_admin token if available
+        if "store_admin" not in self.auth_tokens:
+            self.log_test("Invitation Management", False, "No store admin token available for testing")
+            return False
+        
+        headers = {
+            "Authorization": f"Bearer {self.auth_tokens['store_admin']['token']}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test POST /api/invitations/generate
+        try:
+            response = self.session.post(
+                f"{self.base_url}/invitations/generate",
+                json={"role": "courier", "expires_in_days": 7},
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "code" in data and len(data["code"]) == 8:
+                    self.log_test("Generate Invitation Code", True, f"Successfully generated invitation code: {data['code']}")
+                    self.test_generated_code = data["code"]
+                    generate_success = True
+                else:
+                    self.log_test("Generate Invitation Code", False, "Invalid code generation response", data)
+                    generate_success = False
+            else:
+                self.log_test("Generate Invitation Code", False, f"HTTP {response.status_code}", response.text)
+                generate_success = False
+                
+        except Exception as e:
+            self.log_test("Generate Invitation Code", False, "Request failed", str(e))
+            generate_success = False
+        
+        # Test GET /api/invitations
+        try:
+            response = self.session.get(f"{self.base_url}/invitations", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list) and len(data) > 0:
+                    # Check if our generated code is in the list
+                    generated_code_found = any(
+                        inv.get("code") == getattr(self, 'test_generated_code', None) 
+                        for inv in data
+                    )
+                    if generated_code_found or len(data) >= 3:  # At least preset codes
+                        self.log_test("Get Invitation Codes", True, f"Successfully retrieved {len(data)} invitation codes")
+                        get_codes_success = True
+                    else:
+                        self.log_test("Get Invitation Codes", False, "Generated code not found in list", data)
+                        get_codes_success = False
+                else:
+                    self.log_test("Get Invitation Codes", False, "No invitation codes returned", data)
+                    get_codes_success = False
+            else:
+                self.log_test("Get Invitation Codes", False, f"HTTP {response.status_code}", response.text)
+                get_codes_success = False
+                
+        except Exception as e:
+            self.log_test("Get Invitation Codes", False, "Request failed", str(e))
+            get_codes_success = False
+        
+        # Test DELETE /api/invitations/{code} (only if we generated a code)
+        if hasattr(self, 'test_generated_code'):
+            try:
+                response = self.session.delete(
+                    f"{self.base_url}/invitations/{self.test_generated_code}",
+                    headers=headers
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "deleted successfully" in data.get("message", "").lower():
+                        self.log_test("Delete Invitation Code", True, f"Successfully deleted invitation code: {self.test_generated_code}")
+                        delete_success = True
+                    else:
+                        self.log_test("Delete Invitation Code", False, "Unexpected delete response", data)
+                        delete_success = False
+                else:
+                    self.log_test("Delete Invitation Code", False, f"HTTP {response.status_code}", response.text)
+                    delete_success = False
+                    
+            except Exception as e:
+                self.log_test("Delete Invitation Code", False, "Request failed", str(e))
+                delete_success = False
+        else:
+            self.log_test("Delete Invitation Code", True, "Skipped - no generated code to delete")
+            delete_success = True
+        
+        # Test unauthorized access (customer trying to generate codes)
+        if "customer" in self.auth_tokens:
+            customer_headers = {
+                "Authorization": f"Bearer {self.auth_tokens['customer']['token']}",
+                "Content-Type": "application/json"
+            }
+            
+            try:
+                response = self.session.post(
+                    f"{self.base_url}/invitations/generate",
+                    json={"role": "courier", "expires_in_days": 7},
+                    headers=customer_headers
+                )
+                
+                if response.status_code == 403:
+                    self.log_test("Invitation Management (Customer Restriction)", True, "Customer properly denied invitation management access")
+                    unauthorized_success = True
+                else:
+                    self.log_test("Invitation Management (Customer Restriction)", False, f"Customer should be denied, got {response.status_code}")
+                    unauthorized_success = False
+                    
+            except Exception as e:
+                self.log_test("Invitation Management (Customer Restriction)", False, "Request failed", str(e))
+                unauthorized_success = False
+        else:
+            self.log_test("Invitation Management (Customer Restriction)", True, "Skipped - no customer token available")
+            unauthorized_success = True
+        
+        return generate_success and get_codes_success and delete_success and unauthorized_success
+    
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Backend API Tests for MegaBodega Delivery App")
