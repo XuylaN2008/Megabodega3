@@ -142,7 +142,7 @@ class PaymentService:
                     "updated_at": datetime.utcnow()
                 }
                 
-                await self.collection.update_one(
+                await db.payment_transactions.update_one(
                     {"session_id": session_id}, 
                     {"$set": update_data}
                 )
