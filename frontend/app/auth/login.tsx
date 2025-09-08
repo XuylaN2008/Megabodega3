@@ -224,6 +224,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#333',
+  },
+  dividerText: {
+    color: '#666',
+    marginHorizontal: 16,
+    fontSize: 14,
+  },
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
