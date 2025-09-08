@@ -138,8 +138,15 @@ class BackendTester:
     
     def test_duplicate_registration(self):
         """Test that duplicate email registration fails properly"""
+        # Use the first registered user's email
+        if not self.auth_tokens:
+            self.log_test("Duplicate Registration", False, "No registered users to test duplicate with")
+            return False
+            
+        first_user_email = list(self.auth_tokens.values())[0]["email"]
+        
         duplicate_user = {
-            "email": "maria.gonzalez@gmail.com",  # Same as first test user
+            "email": first_user_email,  # Same as first test user
             "full_name": "María Duplicate",
             "phone": "+593111111111",
             "role": "customer",
