@@ -65,6 +65,89 @@ app.add_middleware(
 async def health_check():
     return {"status": "healthy", "message": "Delivery App API is running"}
 
+# Invitation System endpoints
+@api_router.post("/invitations/generate", response_model=dict)
+async def generate_invitation_code(
+    invitation_data: InvitationCodeCreate,
+    current_user: dict = Depends(get_store_admin_user),
+    db = Depends(get_database)
+):
+    """Generate invitation code for courier or staff (Admin only)"""
+    try:
+        invitation_system = InvitationSystem()
+        code = await invitation_system.generate_invitation_code(
+            role=invitation_data.role.value,
+            created_by=current_user["id"],
+            expires_in_days=invitation_data.expires_in_days
+        )
+        invitation_system.client.close()
+        return {"code": code, "message": "Invitation code generated successfully"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate invitation code: {str(e)}"
+        )
+
+@api_router.post("/invitations/validate", response_model=dict)
+async def validate_invitation_code(validation_data: InvitationCodeValidate):
+    """Validate invitation code"""
+    try:
+        invitation_system = InvitationSystem()
+        is_valid = await invitation_system.validate_invitation_code(
+            code=validation_data.code,
+            role=validation_data.role.value
+        )
+        invitation_system.client.close()
+        return {"valid": is_valid}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to validate invitation code: {str(e)}"
+        )
+
+@api_router.get("/invitations", response_model=List[InvitationCodeResponse])
+async def get_invitation_codes(
+    current_user: dict = Depends(get_store_admin_user),
+    db = Depends(get_database)
+):
+    """Get all invitation codes created by current user (Admin only)"""
+    try:
+        invitation_system = InvitationSystem()
+        codes = await invitation_system.get_invitation_codes(created_by=current_user["id"])
+        invitation_system.client.close()
+        return [InvitationCodeResponse(**code) for code in codes]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve invitation codes: {str(e)}"
+        )
+
+@api_router.delete("/invitations/{code}")
+async def delete_invitation_code(
+    code: str,
+    current_user: dict = Depends(get_store_admin_user),
+    db = Depends(get_database)
+):
+    """Delete invitation code (Admin only)"""
+    try:
+        invitation_system = InvitationSystem()
+        deleted = await invitation_system.delete_invitation_code(code)
+        invitation_system.client.close()
+        if deleted:
+            return {"message": "Invitation code deleted successfully"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Invitation code not found"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete invitation code: {str(e)}"
+        )
+
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=AuthResponse)
 async def register_user(user_data: UserCreate, db = Depends(get_database)):
