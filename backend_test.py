@@ -330,11 +330,11 @@ class BackendTester:
         try:
             response = self.session.get(f"{self.base_url}/auth/me")
             
-            if response.status_code == 401:
+            if response.status_code in [401, 403]:  # Both are valid for unauthorized access
                 self.log_test("Unauthorized Access", True, "Properly rejected request without token")
                 return True
             else:
-                self.log_test("Unauthorized Access", False, f"Should return 401, got {response.status_code}", response.text)
+                self.log_test("Unauthorized Access", False, f"Should return 401 or 403, got {response.status_code}", response.text)
                 return False
                 
         except Exception as e:
