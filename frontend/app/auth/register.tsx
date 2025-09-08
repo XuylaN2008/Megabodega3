@@ -110,9 +110,24 @@ export default function RegisterScreen() {
   };
 
   const roleOptions = [
-    { value: 'customer', label: 'Cliente', icon: 'person', description: 'Comprar productos' },
-    { value: 'store_admin', label: 'Tienda', icon: 'storefront', description: 'Vender productos' },
-    { value: 'delivery', label: 'Repartidor', icon: 'bicycle', description: 'Entregar pedidos' },
+    { 
+      value: 'customer', 
+      label: t('auth.accountTypes.customer'), 
+      icon: 'person', 
+      description: t('auth.accountTypes.descriptions.customer')
+    },
+    { 
+      value: 'store_admin', 
+      label: t('auth.accountTypes.storeAdmin'), 
+      icon: 'storefront', 
+      description: t('auth.accountTypes.descriptions.storeAdmin')
+    },
+    { 
+      value: 'delivery', 
+      label: t('auth.accountTypes.delivery'), 
+      icon: 'bicycle', 
+      description: t('auth.accountTypes.descriptions.delivery')
+    },
   ];
 
   return (
