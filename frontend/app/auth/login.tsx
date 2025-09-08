@@ -44,6 +44,15 @@ export default function LoginScreen() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      Alert.alert('Google Login', 'Перенаправление на Google...');
+      // Здесь будет интеграция с Google OAuth
+    } catch (error) {
+      Alert.alert(t('common.error'), 'Ошибка входа через Google');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
