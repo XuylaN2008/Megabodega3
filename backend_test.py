@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://megabodega-dev.preview.emergentagent.com/api"
+BACKEND_URL = "https://megabodega-delivery.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
@@ -630,7 +630,7 @@ class BackendTester:
             response = self.session.options(
                 f"{self.base_url}/health",
                 headers={
-                    "Origin": "https://megabodega-dev.preview.emergentagent.com",
+                    "Origin": "https://megabodega-delivery.preview.emergentagent.com",
                     "Access-Control-Request-Method": "GET",
                     "Access-Control-Request-Headers": "Content-Type"
                 }
@@ -698,7 +698,7 @@ class BackendTester:
         """Test POST /api/payments/checkout/session without authentication"""
         checkout_data = {
             "package_id": "small",
-            "origin_url": "https://megabodega-dev.preview.emergentagent.com",
+            "origin_url": "https://megabodega-delivery.preview.emergentagent.com",
             "metadata": {"test": "unauthenticated_checkout"}
         }
         
@@ -746,7 +746,7 @@ class BackendTester:
         
         checkout_data = {
             "package_id": "medium",
-            "origin_url": "https://megabodega-dev.preview.emergentagent.com",
+            "origin_url": "https://megabodega-delivery.preview.emergentagent.com",
             "metadata": {"test": "authenticated_checkout"}
         }
         
@@ -795,7 +795,7 @@ class BackendTester:
         """Test POST /api/payments/checkout/session with invalid package"""
         checkout_data = {
             "package_id": "invalid_package",
-            "origin_url": "https://megabodega-dev.preview.emergentagent.com"
+            "origin_url": "https://megabodega-delivery.preview.emergentagent.com"
         }
         
         try:
