@@ -88,7 +88,7 @@ export default function LoginScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Header */}
-          <Animated.View style={[styles.header, headerAnimatedStyle]}>
+          <View style={styles.header}>
             <Link href="/" asChild>
               <TouchableOpacity style={styles.backButton}>
                 <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -96,10 +96,10 @@ export default function LoginScreen() {
             </Link>
             <Text style={styles.title}>{t('auth.loginTitle')}</Text>
             <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
-          </Animated.View>
+          </View>
 
           {/* Form */}
-          <Animated.View style={[styles.form, formAnimatedStyle]}>
+          <View style={styles.form}>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>{t('auth.email')}</Text>
               <TextInput
@@ -140,42 +140,37 @@ export default function LoginScreen() {
               </View>
             </View>
 
-            <Animated.View style={[buttonAnimatedStyle]}>
-              <AnimatedTouchableOpacity
-                style={[
-                  styles.loginButton,
-                  loading && styles.loginButtonDisabled,
-                  loginButtonAnimatedStyle
-                ]}
-                onPress={handleLogin}
-                onPressIn={onLoginPressIn}
-                onPressOut={onLoginPressOut}
-                disabled={loading}
-                activeOpacity={1}
-              >
-                <Text style={styles.loginButtonText}>
-                  {loading ? t('auth.loggingIn') : t('auth.loginButton')}
-                </Text>
-              </AnimatedTouchableOpacity>
-            </Animated.View>
+            <TouchableOpacity
+              style={[
+                styles.loginButton,
+                loading && styles.loginButtonDisabled
+              ]}
+              onPress={handleLogin}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.loginButtonText}>
+                {loading ? t('auth.loggingIn') : t('auth.loginButton')}
+              </Text>
+            </TouchableOpacity>
 
             {/* Divider */}
-            <Animated.View style={[styles.divider, linkAnimatedStyle]}>
+            <View style={styles.divider}>
               <View style={styles.dividerLine} />
               <Text style={styles.dividerText}>o</Text>
               <View style={styles.dividerLine} />
-            </Animated.View>
+            </View>
 
             {/* Register Link */}
-            <Animated.View style={[styles.registerContainer, linkAnimatedStyle]}>
+            <View style={styles.registerContainer}>
               <Text style={styles.registerText}>{t('auth.noAccount')}</Text>
               <Link href="/auth/register" asChild>
                 <TouchableOpacity>
                   <Text style={styles.registerLink}>{t('auth.registerHere')}</Text>
                 </TouchableOpacity>
               </Link>
-            </Animated.View>
-          </Animated.View>
+            </View>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
