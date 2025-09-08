@@ -61,7 +61,7 @@ async def create_checkout_session(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @payment_router.get("/checkout/status/{session_id}")
-async def get_checkout_status(session_id: str, request: Request):
+async def get_checkout_status(session_id: str, request: Request, db = Depends(get_database)):
     """Get the status of a checkout session"""
     
     try:
