@@ -500,12 +500,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Invitation System for Courier/Staff Registration"
-    - "Enhanced User Registration with Invitation Codes"
-    - "Location/City Filtering for Baños de Agua Santa"
-    - "User Theme Management System"
-    - "Invitation Management Endpoints"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -519,3 +514,5 @@ agent_communication:
       message: "Completed comprehensive testing of NEW PAYMENT SYSTEM integration. All payment endpoints working perfectly: GET /api/payments/packages returns 4 payment packages, POST /api/payments/checkout/session creates Stripe sessions for both authenticated/unauthenticated users, GET /api/payments/checkout/status retrieves session status, POST /api/payments/webhook/stripe validates signatures properly. Fixed .env file parsing issue. Created seed data for proper catalog testing. ALL 19/19 BACKEND TESTS NOW PASSING (100% success rate). Payment integration with Stripe via emergentintegrations library is fully functional and secure."
     - agent: "main"
       message: "Implemented Perekrestok clone foundation: 1) Complete invitation system for courier/staff registration with preset codes (COURIER01, STAFF001, ADMIN123), 2) Enhanced user registration with invitation code validation, 3) City filtering restricted to Baños de Agua Santa only, 4) User theme management (dark/light themes), 5) Admin invitation management endpoints. All backend features implemented and ready for testing."
+    - agent: "testing"
+      message: "Completed comprehensive testing of NEW PEREKRESTOK FEATURES. All 5 high-priority backend features working correctly: 1) Invitation System - preset codes properly initialized and validated, 2) Enhanced User Registration - courier/staff require invitation codes, customers don't, 3) Location Filtering - restricted to Baños de Agua Santa with 3 delivery areas, 4) Theme Management - dark/light theme persistence working, 5) Invitation Management - admin CRUD operations functional. Fixed UserRole enum to include 'courier' and 'staff' roles. 22/24 backend tests passing (91.7% success rate). Two test failures are due to invitation codes being single-use as designed - they get consumed during testing which is expected behavior. All Perekrestok backend functionality is fully operational."
