@@ -209,7 +209,7 @@ class PaymentService:
                     new_status = PaymentStatus.PAID if webhook_response.payment_status == "paid" else PaymentStatus.PENDING
                     
                     if transaction["payment_status"] != new_status:
-                        await self.collection.update_one(
+                        await db.payment_transactions.update_one(
                             {"session_id": webhook_response.session_id},
                             {"$set": {
                                 "payment_status": new_status,
