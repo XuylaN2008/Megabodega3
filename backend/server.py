@@ -78,12 +78,11 @@ async def register_user(user_data: UserCreate, db = Depends(get_database)):
     
     # Create user document
     user_dict = user_data.dict()
-    user_dict["password"] = hashed_password
-    del user_dict["password"]  # Don't store plain password
+    user_dict.pop("password", None)  # Remove plain password safely
     
-    user = User(**user_dict, password=hashed_password)
+    user = User(**user_dict)
     user_doc = user.dict()
-    user_doc["password"] = hashed_password
+    user_doc["password"] = hashed_password  # Add hashed password
     
     # Insert user
     result = await db.users.insert_one(user_doc)
@@ -97,11 +96,10 @@ async def register_user(user_data: UserCreate, db = Depends(get_database)):
     access_token = create_access_token(data={"sub": user.email})
     
     # Remove password from response
-    user_dict = user.dict()
-    del user_dict["password"]
+    response_user = user.dict()
     
     return AuthResponse(
-        user=User(**user_dict),
+        user=User(**response_user),
         access_token=access_token
     )
 
