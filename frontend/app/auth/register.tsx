@@ -2,163 +2,120 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { useSimpleI18n } from '../../contexts/SimpleI18nContext';
-import { Ionicons } from '@expo/vector-icons';
+import { useMegaBodegaI18n } from '../../contexts/MegaBodegaI18nContext';
+import { MegaBodegaLanguageSelector } from '../../components/MegaBodegaLanguageSelector';
 
 export default function RegisterScreen() {
+  const { t } = useMegaBodegaI18n();
+  const { register, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    fullName: '',
-    phone: '',
     password: '',
     confirmPassword: '',
-    role: 'customer',
+    full_name: '',
+    phone: '',
+    role: 'customer' as 'customer' | 'courier' | 'staff',
   });
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  
-  const { register } = useAuth();
-  const { t } = useSimpleI18n();
+
+  const handleRegister = async () => {
+    if (!formData.email || !formData.password || !formData.full_name) {
+      Alert.alert(t('common.error'), 'Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      Alert.alert(t('common.error'), 'Las contraseñas no coinciden');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      Alert.alert(t('common.error'), 'La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    const success = await register({
+      email: formData.email,
+      password: formData.password,
+      full_name: formData.full_name,
+      phone: formData.phone,
+      role: formData.role,
+    });
+
+    if (success) {
+      Alert.alert(t('common.success'), t('auth.registerSuccess'));
+      router.replace('/customer/home');
+    } else {
+      Alert.alert(t('common.error'), t('auth.registerError'));
+    }
+  };
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const validateForm = () => {
-    if (!formData.email || !formData.fullName || !formData.phone || !formData.password) {
-      return 'Пожалуйста, заполните все поля';
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      return 'Пароли не совпадают';
-    }
-    
-    if (formData.password.length < 6) {
-      return 'Пароль должен содержать минимум 6 символов';
-    }
-    
-    if (!formData.email.includes('@')) {
-      return 'Введите корректный email';
-    }
-    
-    return null;
-  };
-
-  const handleRegister = async () => {
-    const error = validateForm();
-    if (error) {
-      Alert.alert(t('common.error'), error);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await register({
-        email: formData.email,
-        full_name: formData.fullName,
-        phone: formData.phone,
-        role: formData.role,
-        password: formData.password,
-      });
-      Alert.alert(t('common.success'), 'Аккаунт успешно создан!');
-      router.replace('/dashboard');
-    } catch (error: any) {
-      Alert.alert(t('common.error'), error.message || 'Ошибка регистрации');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const roleOptions = [
-    { value: 'customer', label: t('auth.customerRole'), icon: 'person' },
-    { value: 'store_admin', label: t('auth.storeRole'), icon: 'storefront' },
-    { value: 'delivery', label: t('auth.deliveryRole'), icon: 'bicycle' },
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={['#1a1a1a', '#2a2a2a']}
+        style={StyleSheet.absoluteFill}
+      />
+      
+      <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Header */}
           <View style={styles.header}>
-            <Link href="/" asChild>
-              <TouchableOpacity style={styles.backButton}>
-                <Ionicons name="arrow-back" size={24} color="#fff" />
-              </TouchableOpacity>
-            </Link>
-            <Text style={styles.title}>{t('auth.registerTitle')}</Text>
-            <Text style={styles.subtitle}>Присоединяйтесь к EcuaDelivery</Text>
+            <MegaBodegaLanguageSelector compact />
+          </View>
+
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoEmoji}>🏪</Text>
+            <Text style={styles.title}>{t('auth.createAccount')}</Text>
+            <Text style={styles.subtitle}>Únete a MegaBodega</Text>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
-            {/* Role Selection */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('auth.accountType')}</Text>
-              <View style={styles.roleContainer}>
-                {roleOptions.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.roleOption,
-                      formData.role === option.value && styles.roleOptionSelected,
-                    ]}
-                    onPress={() => updateFormData('role', option.value)}
-                  >
-                    <Ionicons
-                      name={option.icon as any}
-                      size={20}
-                      color={formData.role === option.value ? '#007AFF' : '#999'}
-                    />
-                    <Text
-                      style={[
-                        styles.roleLabel,
-                        formData.role === option.value && styles.roleLabelSelected,
-                      ]}
-                    >
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('auth.fullName')}</Text>
+              <Text style={styles.label}>{t('auth.fullName')} *</Text>
               <TextInput
                 style={styles.input}
-                value={formData.fullName}
-                onChangeText={(value) => updateFormData('fullName', value)}
-                placeholder="Ваше полное имя"
-                placeholderTextColor="#666"
+                value={formData.full_name}
+                onChangeText={(value) => updateFormData('full_name', value)}
+                placeholder="Tu nombre completo"
+                placeholderTextColor="#999"
                 autoCapitalize="words"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('auth.email')}</Text>
+              <Text style={styles.label}>{t('auth.email')} *</Text>
               <TextInput
                 style={styles.input}
                 value={formData.email}
                 onChangeText={(value) => updateFormData('email', value)}
-                placeholder="your@email.com"
-                placeholderTextColor="#666"
+                placeholder="tu@email.com"
+                placeholderTextColor="#999"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoComplete="email"
               />
             </View>
 
@@ -168,66 +125,86 @@ export default function RegisterScreen() {
                 style={styles.input}
                 value={formData.phone}
                 onChangeText={(value) => updateFormData('phone', value)}
-                placeholder="+593 999 999 999"
-                placeholderTextColor="#666"
+                placeholder="+593 99 123 4567"
+                placeholderTextColor="#999"
                 keyboardType="phone-pad"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('auth.password')}</Text>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={[styles.input, styles.passwordInput]}
-                  value={formData.password}
-                  onChangeText={(value) => updateFormData('password', value)}
-                  placeholder="Минимум 6 символов"
-                  placeholderTextColor="#666"
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity
-                  style={styles.eyeButton}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Ionicons
-                    name={showPassword ? 'eye-off' : 'eye'}
-                    size={20}
-                    color="#666"
-                  />
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.label}>{t('auth.password')} *</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.password}
+                onChangeText={(value) => updateFormData('password', value)}
+                placeholder="Mínimo 6 caracteres"
+                placeholderTextColor="#999"
+                secureTextEntry
+                autoComplete="new-password"
+              />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('auth.confirmPassword')}</Text>
+              <Text style={styles.label}>{t('auth.confirmPassword')} *</Text>
               <TextInput
                 style={styles.input}
                 value={formData.confirmPassword}
                 onChangeText={(value) => updateFormData('confirmPassword', value)}
-                placeholder="Повторите пароль"
-                placeholderTextColor="#666"
-                secureTextEntry={true}
-                autoCapitalize="none"
+                placeholder="Confirma tu contraseña"
+                placeholderTextColor="#999"
+                secureTextEntry
               />
             </View>
 
-            <TouchableOpacity
-              style={[styles.registerButton, loading && styles.buttonDisabled]}
+            {/* Role Selection */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>{t('auth.selectRole')}</Text>
+              <View style={styles.roleContainer}>
+                {[
+                  { key: 'customer', label: t('auth.customer'), desc: t('auth.customerDesc') },
+                  { key: 'courier', label: t('auth.courier'), desc: t('auth.courierDesc') },
+                  { key: 'staff', label: t('auth.staff'), desc: t('auth.staffDesc') },
+                ].map((role) => (
+                  <TouchableOpacity
+                    key={role.key}
+                    style={[
+                      styles.roleOption,
+                      formData.role === role.key && styles.roleOptionSelected,
+                    ]}
+                    onPress={() => updateFormData('role', role.key)}
+                  >
+                    <Text style={[
+                      styles.roleLabel,
+                      formData.role === role.key && styles.roleLabelSelected,
+                    ]}>
+                      {role.label}
+                    </Text>
+                    <Text style={styles.roleDescription}>{role.desc}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.registerButton, isLoading && styles.buttonDisabled]}
               onPress={handleRegister}
-              disabled={loading}
+              disabled={isLoading}
             >
-              <Text style={styles.registerButtonText}>
-                {loading ? t('common.loading') : t('auth.registerButton')}
-              </Text>
+              <LinearGradient
+                colors={['#007AFF', '#0051D5']}
+                style={styles.gradientButton}
+              >
+                <Text style={styles.registerButtonText}>
+                  {isLoading ? t('common.loading') : t('auth.register')}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
 
-            {/* Login Link */}
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>{t('auth.hasAccount')}</Text>
+              <Text style={styles.loginText}>{t('auth.alreadyHaveAccount')}</Text>
               <Link href="/auth/login" asChild>
                 <TouchableOpacity>
-                  <Text style={styles.loginLink}>{t('auth.loginHere')}</Text>
+                  <Text style={styles.loginLink}>{t('auth.login')}</Text>
                 </TouchableOpacity>
               </Link>
             </View>
@@ -249,17 +226,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingVertical: 20,
   },
   header: {
-    marginBottom: 32,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingTop: 20,
+    marginBottom: 30,
   },
-  backButton: {
-    marginBottom: 20,
-    alignSelf: 'flex-start',
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#333',
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logoEmoji: {
+    fontSize: 60,
+    marginBottom: 16,
   },
   title: {
     fontSize: 32,
@@ -270,7 +250,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#999',
-    lineHeight: 22,
+    textAlign: 'center',
   },
   form: {
     flex: 1,
@@ -285,81 +265,74 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#333',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 16,
     color: '#fff',
-    backgroundColor: '#2a2a2a',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   roleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   roleOption: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#333',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
-    backgroundColor: '#2a2a2a',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   roleOptionSelected: {
     borderColor: '#007AFF',
-    backgroundColor: '#1a2332',
+    backgroundColor: 'rgba(0, 122, 255, 0.1)',
   },
   roleLabel: {
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: '600',
     color: '#fff',
-    marginLeft: 8,
+    marginBottom: 4,
   },
   roleLabelSelected: {
     color: '#007AFF',
   },
-  passwordContainer: {
-    position: 'relative',
-  },
-  passwordInput: {
-    paddingRight: 50,
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: 16,
-    top: 16,
-    padding: 4,
+  roleDescription: {
+    fontSize: 14,
+    color: '#999',
   },
   registerButton: {
-    backgroundColor: '#007AFF',
+    marginTop: 24,
+    marginBottom: 24,
     borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 32,
+    overflow: 'hidden',
   },
-  buttonDisabled: {
-    opacity: 0.6,
+  gradientButton: {
+    paddingVertical: 18,
+    alignItems: 'center',
   },
   registerButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
   },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
   loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: 20,
   },
   loginText: {
     color: '#999',
-    fontSize: 16,
+    fontSize: 14,
   },
   loginLink: {
     color: '#007AFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    marginLeft: 4,
   },
 });
