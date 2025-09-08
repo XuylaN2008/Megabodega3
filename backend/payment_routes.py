@@ -75,7 +75,7 @@ async def get_checkout_status(session_id: str, request: Request, db = Depends(ge
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @payment_router.post("/webhook/stripe")
-async def stripe_webhook(request: Request):
+async def stripe_webhook(request: Request, db = Depends(get_database)):
     """Handle Stripe webhook events"""
     
     try:
