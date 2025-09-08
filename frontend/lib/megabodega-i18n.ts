@@ -260,7 +260,8 @@ const translations: Record<Language, Translations> = {
     welcome: {
       title: 'MegaBodega',
       subtitle: 'Delivery a tu puerta',
-      slogan: 'Los mejores productos, entrega rápida'
+      slogan: 'Los mejores productos, entrega rápida',
+      greeting: 'Hola'
     },
     auth: {
       signInWithGoogle: 'Continuar con Google',
