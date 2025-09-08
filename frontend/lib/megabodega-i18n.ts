@@ -413,7 +413,8 @@ const translations: Record<Language, Translations> = {
     welcome: {
       title: 'MegaBodega',
       subtitle: 'Доставка к двери',
-      slogan: 'Лучшие продукты, быстрая доставка'
+      slogan: 'Лучшие продукты, быстрая доставка',
+      greeting: 'Привет'
     },
     auth: {
       signInWithGoogle: 'Войти через Google',
