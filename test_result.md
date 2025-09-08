@@ -486,9 +486,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Payment System Integration Testing"
-    - "Complete Backend API Verification"
-    - "Stripe Integration Validation"
+    - "Invitation System for Courier/Staff Registration"
+    - "Enhanced User Registration with Invitation Codes"
+    - "Location/City Filtering for Baños de Agua Santa"
+    - "User Theme Management System"
+    - "Invitation Management Endpoints"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
