@@ -239,8 +239,14 @@ class BackendTester:
     
     def test_invalid_login(self):
         """Test login with invalid credentials"""
+        if not self.auth_tokens:
+            self.log_test("Invalid Login", False, "No registered users to test invalid login with")
+            return False
+            
+        first_user_email = list(self.auth_tokens.values())[0]["email"]
+        
         invalid_logins = [
-            {"email": "maria.gonzalez@gmail.com", "password": "WrongPassword", "case": "wrong password"},
+            {"email": first_user_email, "password": "WrongPassword", "case": "wrong password"},
             {"email": "nonexistent@gmail.com", "password": "AnyPassword", "case": "nonexistent user"}
         ]
         
