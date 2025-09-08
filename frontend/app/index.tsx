@@ -118,6 +118,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 40,
+    opacity: 0,
+  },
+  contentLoaded: {
+    opacity: 1,
   },
   header: {
     alignItems: 'center',
