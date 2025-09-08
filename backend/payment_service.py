@@ -98,7 +98,7 @@ class PaymentService:
             )
             
             # Insert into database
-            result = await self.collection.insert_one(transaction.model_dump(exclude={"id"}))
+            result = await db.payment_transactions.insert_one(transaction.model_dump(exclude={"id"}))
             logger.info(f"Created payment transaction {result.inserted_id} for session {session.session_id}")
             
             return {
