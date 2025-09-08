@@ -42,6 +42,7 @@ class PaymentService:
         package_id: str, 
         origin_url: str, 
         request: Request,
+        db,
         user_id: Optional[str] = None,
         user_email: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None
