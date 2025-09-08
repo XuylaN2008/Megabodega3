@@ -117,12 +117,17 @@ export default function LoginScreen() {
             {/* Divider */}
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>o</Text>
+              <Text style={styles.dividerText}>или</Text>
               <View style={styles.dividerLine} />
             </View>
 
             {/* Google Login */}
-            <GoogleLoginButton text="Continuar con Google" />
+            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+              <View style={styles.googleButtonContent}>
+                <Ionicons name="logo-google" size={20} color="#4285F4" />
+                <Text style={styles.googleButtonText}>Войти через Google</Text>
+              </View>
+            </TouchableOpacity>
 
             {/* Register Link */}
             <View style={styles.registerContainer}>
