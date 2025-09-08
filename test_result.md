@@ -314,51 +314,63 @@ backend:
 
   - task: "Enhanced User Registration with Invitation Codes" 
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Updated user registration endpoint to require and validate invitation codes for courier and staff roles. Customer registration remains open. Invitation codes are marked as used after successful registration."
+        - working: true
+          agent: "testing"
+          comment: "Enhanced user registration working correctly. Courier and staff registration properly requires valid invitation codes. Customer registration works without codes. Invalid/missing invitation codes properly rejected with 400 status. Invitation codes are correctly marked as used after successful registration."
 
   - task: "Location/City Filtering for Baños de Agua Santa"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added delivery area endpoints that restrict delivery to Baños de Agua Santa only. Includes location validation and predefined delivery areas (Centro, Norte, Sur)."
+        - working: true
+          agent: "testing"
+          comment: "Location filtering working correctly. GET /api/locations/delivery-areas returns 3 delivery areas for Baños de Agua Santa (Centro, Norte, Sur). Location validation properly accepts Baños de Agua Santa and rejects other cities like Quito with proper suggestion message."
 
   - task: "User Theme Management System"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added theme management endpoints for dark/light theme preferences. Users can get and update their theme preferences, stored in MongoDB."
+        - working: true
+          agent: "testing"
+          comment: "Theme management system working correctly. GET /api/user/theme returns user theme preference (defaults to light). POST /api/user/theme successfully updates theme to dark/light. Theme persistence verified - updated themes are properly stored and retrieved. Invalid themes properly rejected with 400 status."
 
   - task: "Invitation Management Endpoints"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added admin endpoints for invitation code generation, validation, listing, and deletion. Only store admins can manage invitation codes."
+        - working: true
+          agent: "testing"
+          comment: "Invitation management endpoints working correctly. Store admins can generate 8-character invitation codes, list their created codes, and delete codes. GET /api/invitations returns invitation codes with proper structure. DELETE /api/invitations/{code} successfully removes codes. Customer access properly denied with 403 status."
 
 frontend:
   - task: "MegaBodega Internationalization System"
