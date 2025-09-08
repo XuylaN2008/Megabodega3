@@ -112,7 +112,7 @@ class PaymentService:
             logger.error(f"Error creating checkout session: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
     
-    async def get_checkout_status(self, session_id: str, request: Request) -> Dict:
+    async def get_checkout_status(self, session_id: str, request: Request, db) -> Dict:
         """Get and update checkout session status"""
         
         try:
