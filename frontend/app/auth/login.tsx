@@ -253,6 +253,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     fontSize: 14,
   },
+  googleButton: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
