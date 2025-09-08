@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -8,83 +8,55 @@ import {
   ScrollView,
 } from 'react-native';
 import { Link } from 'expo-router';
-import { useI18n } from '../../contexts/I18nContext';
+import { useSimpleI18n } from '../../contexts/SimpleI18nContext';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withDelay,
-  interpolate,
-} from 'react-native-reanimated';
-
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function BrowseScreen() {
-  const { t } = useI18n();
-  
-  // Animation values
-  const headerAnimation = useSharedValue(0);
-  const contentAnimation = useSharedValue(0);
-
-  useEffect(() => {
-    headerAnimation.value = withDelay(100, withSpring(1, { damping: 15, stiffness: 200 }));
-    contentAnimation.value = withDelay(300, withSpring(1, { damping: 15, stiffness: 200 }));
-  }, []);
-
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(headerAnimation.value, [0, 1], [-30, 0]) }],
-    opacity: headerAnimation.value,
-  }));
-
-  const contentAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(contentAnimation.value, [0, 1], [40, 0]) }],
-    opacity: contentAnimation.value,
-  }));
+  const { t } = useSimpleI18n();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        <Animated.View style={[styles.header, headerAnimatedStyle]}>
+        <View style={styles.header}>
           <Link href="/" asChild>
             <TouchableOpacity style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
           </Link>
-          <Text style={styles.title}>Explorar Productos</Text>
-          <Text style={styles.subtitle}>Descubre lo que tenemos para ti</Text>
-        </Animated.View>
+          <Text style={styles.title}>Каталог продуктов</Text>
+          <Text style={styles.subtitle}>Откройте для себя лучшие предложения</Text>
+        </View>
 
         {/* Content */}
-        <Animated.View style={[styles.content, contentAnimatedStyle]}>
+        <View style={styles.content}>
           <View style={styles.comingSoonContainer}>
             <Ionicons name="construct" size={64} color="#007AFF" />
-            <Text style={styles.comingSoonTitle}>¡Próximamente!</Text>
+            <Text style={styles.comingSoonTitle}>Скоро здесь!</Text>
             <Text style={styles.comingSoonText}>
-              Estamos trabajando en traerte el mejor catálogo de productos.
-              Mientras tanto, puedes crear una cuenta para estar al día.
+              Мы работаем над созданием лучшего каталога продуктов для вас. 
+              Тем временем, вы можете создать аккаунт, чтобы быть в курсе новостей.
             </Text>
             
             <View style={styles.buttonContainer}>
               <Link href="/auth/register" asChild>
-                <AnimatedTouchableOpacity style={styles.primaryButton}>
+                <TouchableOpacity style={styles.primaryButton}>
                   <Text style={styles.primaryButtonText}>
                     {t('buttons.register')}
                   </Text>
-                </AnimatedTouchableOpacity>
+                </TouchableOpacity>
               </Link>
               
               <Link href="/auth/login" asChild>
-                <AnimatedTouchableOpacity style={styles.secondaryButton}>
+                <TouchableOpacity style={styles.secondaryButton}>
                   <Text style={styles.secondaryButtonText}>
                     {t('buttons.login')}
                   </Text>
-                </AnimatedTouchableOpacity>
+                </TouchableOpacity>
               </Link>
             </View>
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
