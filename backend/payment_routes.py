@@ -65,7 +65,7 @@ async def get_checkout_status(session_id: str, request: Request, db = Depends(ge
     """Get the status of a checkout session"""
     
     try:
-        result = await payment_service.get_checkout_status(session_id, request)
+        result = await payment_service.get_checkout_status(session_id, request, db)
         return result
         
     except HTTPException:
