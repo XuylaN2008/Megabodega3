@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "MegaBodega Delivery App - Create a modern, multi-role delivery application with smooth animations, role-based navigation, and multi-language support (ES, EN, RU)"
+user_problem_statement: "Perekrestok Delivery App Clone - Create a comprehensive delivery app with invitation-based registration for courier/staff, dark/light themes, city restriction to Baños de Agua Santa, and high-quality translations. Integrate all existing MegaBodega features."
 
 backend:
   - task: "Health Check Endpoint"
