@@ -14,10 +14,10 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useMegaBodegaI18n } from '../../contexts/MegaBodegaI18nContext';
-import { useCart } from '../../contexts/CartContext';
-import { apiService, Product, Category } from '../../services/api';
-import { MegaBodegaLanguageSelector } from '../../components/MegaBodegaLanguageSelector';
+import { useMegaBodegaI18n } from '../contexts/MegaBodegaI18nContext';
+import { useCart } from '../contexts/CartContext';
+import { apiService, Product, Category } from '../services/api';
+import { MegaBodegaLanguageSelector } from '../components/MegaBodegaLanguageSelector';
 
 export default function CatalogScreen() {
   const { t } = useMegaBodegaI18n();

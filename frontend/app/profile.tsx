@@ -13,9 +13,9 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useMegaBodegaI18n } from '../../contexts/MegaBodegaI18nContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { MegaBodegaLanguageSelector } from '../../components/MegaBodegaLanguageSelector';
+import { useMegaBodegaI18n } from '../contexts/MegaBodegaI18nContext';
+import { useAuth } from '../contexts/AuthContext';
+import { MegaBodegaLanguageSelector } from '../components/MegaBodegaLanguageSelector';
 
 export default function ProfileScreen() {
   const { t, language, setLanguage } = useMegaBodegaI18n();
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     color: '#999',
     marginBottom: 12,
   },
-  rolebadge: {
+  roleBadge: {
     backgroundColor: 'rgba(0, 122, 255, 0.2)',
     paddingHorizontal: 12,
     paddingVertical: 6,
