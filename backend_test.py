@@ -488,16 +488,16 @@ class BackendTester:
             response = self.session.get(f"{self.base_url}/stores")
             if response.status_code == 200:
                 stores = response.json()
-                if len(stores) == 2:
+                if len(stores) >= 2:  # At least 2 stores (may be more due to test store creation)
                     expected_stores = ["Cocina de la Mamá", "Frutas del Trópico"]
                     store_names = [store["name"] for store in stores]
                     if all(name in store_names for name in expected_stores):
-                        self.log_test("Product Catalog (Stores)", True, f"Successfully retrieved {len(stores)} stores: {', '.join(store_names)}")
+                        self.log_test("Product Catalog (Stores)", True, f"Successfully retrieved {len(stores)} stores including: {', '.join(expected_stores)}")
                     else:
-                        self.log_test("Product Catalog (Stores)", False, f"Store names mismatch. Expected: {expected_stores}, Got: {store_names}")
+                        self.log_test("Product Catalog (Stores)", False, f"Missing expected stores. Expected: {expected_stores}, Got: {store_names}")
                         catalog_success = False
                 else:
-                    self.log_test("Product Catalog (Stores)", False, f"Expected 2 stores, got {len(stores)}")
+                    self.log_test("Product Catalog (Stores)", False, f"Expected at least 2 stores, got {len(stores)}")
                     catalog_success = False
             else:
                 self.log_test("Product Catalog (Stores)", False, f"HTTP {response.status_code}", response.text)
