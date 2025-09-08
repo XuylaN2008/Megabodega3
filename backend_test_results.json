@@ -1,197 +1,197 @@
 {
   "total_tests": 27,
-  "passed": 27,
-  "failed": 0,
-  "success_rate": 100.0,
+  "passed": 26,
+  "failed": 1,
+  "success_rate": 96.29629629629629,
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "API is healthy and responding",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.870434"
+      "timestamp": "2025-09-08T18:20:54.051678"
     },
     {
       "test": "Product Catalog (Products)",
       "success": true,
       "message": "Successfully retrieved 11 products",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.885328"
+      "timestamp": "2025-09-08T18:20:54.078828"
     },
     {
       "test": "Product Structure",
       "success": true,
       "message": "Products have all required fields",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.885367"
+      "timestamp": "2025-09-08T18:20:54.078866"
     },
     {
       "test": "Product Catalog (Categories)",
       "success": true,
       "message": "Successfully retrieved 3 categories: Comida Ecuatoriana, Bebidas, Frutas Tropicales",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.937306"
+      "timestamp": "2025-09-08T18:20:54.094844"
     },
     {
       "test": "Product Catalog (Stores)",
-      "success": true,
-      "message": "Successfully retrieved 2 stores: Cocina de la Mam\u00e1, Frutas del Tr\u00f3pico",
+      "success": false,
+      "message": "Expected 2 stores, got 3",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.951738"
+      "timestamp": "2025-09-08T18:20:54.116511"
     },
     {
       "test": "Product Filtering (Category)",
       "success": true,
       "message": "Successfully filtered 4 products by ecuadorian food category",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.962666"
+      "timestamp": "2025-09-08T18:20:54.129770"
     },
     {
       "test": "Product Filtering (Store)",
       "success": true,
       "message": "Successfully filtered 6 products by Cocina de la Mam\u00e1 store",
       "details": null,
-      "timestamp": "2025-09-08T17:28:39.973909"
+      "timestamp": "2025-09-08T18:20:54.141724"
     },
     {
       "test": "Product Filtering (Combined)",
       "success": true,
       "message": "Successfully filtered 5 products by fruits category and tropical fruits store",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.020505"
+      "timestamp": "2025-09-08T18:20:54.151369"
     },
     {
       "test": "Google OAuth (Login Redirect)",
       "success": true,
       "message": "Google login endpoint properly redirects to auth service",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.028922"
+      "timestamp": "2025-09-08T18:20:54.160214"
     },
     {
       "test": "Google OAuth (Session Auth)",
       "success": true,
       "message": "Google session endpoint properly rejects invalid session",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.191818"
+      "timestamp": "2025-09-08T18:20:54.307779"
     },
     {
       "test": "Registration (customer)",
       "success": true,
       "message": "Successfully registered Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.460653"
+      "timestamp": "2025-09-08T18:20:54.633588"
     },
     {
       "test": "Registration (store_admin)",
       "success": true,
       "message": "Successfully registered Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.708892"
+      "timestamp": "2025-09-08T18:20:54.903338"
     },
     {
       "test": "Registration (delivery)",
       "success": true,
       "message": "Successfully registered Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T17:28:40.992894"
+      "timestamp": "2025-09-08T18:20:55.208123"
     },
     {
       "test": "Duplicate Registration",
       "success": true,
       "message": "Properly rejected duplicate email",
       "details": null,
-      "timestamp": "2025-09-08T17:28:41.004550"
+      "timestamp": "2025-09-08T18:20:55.223662"
     },
     {
       "test": "Login (customer)",
       "success": true,
       "message": "Successfully logged in Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T17:28:41.287783"
+      "timestamp": "2025-09-08T18:20:55.640375"
     },
     {
       "test": "Login (store_admin)",
       "success": true,
       "message": "Successfully logged in Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T17:28:41.529704"
+      "timestamp": "2025-09-08T18:20:55.882390"
     },
     {
       "test": "Login (delivery)",
       "success": true,
       "message": "Successfully logged in Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T17:28:41.771049"
+      "timestamp": "2025-09-08T18:20:56.162824"
     },
     {
       "test": "Invalid Login (wrong password)",
       "success": true,
       "message": "Properly rejected invalid credentials",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.013264"
+      "timestamp": "2025-09-08T18:20:56.415494"
     },
     {
       "test": "Invalid Login (nonexistent user)",
       "success": true,
       "message": "Properly rejected invalid credentials",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.065650"
+      "timestamp": "2025-09-08T18:20:56.425580"
     },
     {
       "test": "Get Current User (customer)",
       "success": true,
       "message": "Successfully retrieved user info for Mar\u00eda Gonz\u00e1lez",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.076582"
+      "timestamp": "2025-09-08T18:20:56.476239"
     },
     {
       "test": "Get Current User (store_admin)",
       "success": true,
       "message": "Successfully retrieved user info for Carlos Mendoza",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.127771"
+      "timestamp": "2025-09-08T18:20:56.527389"
     },
     {
       "test": "Get Current User (delivery)",
       "success": true,
       "message": "Successfully retrieved user info for Luis Herrera",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.140172"
+      "timestamp": "2025-09-08T18:20:56.578493"
     },
     {
       "test": "Unauthorized Access",
       "success": true,
       "message": "Properly rejected request without token",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.188216"
+      "timestamp": "2025-09-08T18:20:56.587086"
     },
     {
       "test": "Password Hashing",
       "success": true,
       "message": "Passwords are properly hashed (verified via login functionality)",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.188272"
+      "timestamp": "2025-09-08T18:20:56.587134"
     },
     {
       "test": "Role-based Access (Store Admin)",
       "success": true,
       "message": "Store admin can create stores",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.200533"
+      "timestamp": "2025-09-08T18:20:56.601732"
     },
     {
       "test": "Role-based Access (Customer Restriction)",
       "success": true,
       "message": "Customer properly denied store creation",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.250903"
+      "timestamp": "2025-09-08T18:20:56.652896"
     },
     {
       "test": "CORS Configuration",
       "success": true,
       "message": "CORS headers properly configured",
       "details": null,
-      "timestamp": "2025-09-08T17:28:42.258823"
+      "timestamp": "2025-09-08T18:20:56.661086"
     }
   ]
 }
