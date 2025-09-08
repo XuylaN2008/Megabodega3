@@ -483,6 +483,103 @@ async def get_product(product_id: str, db = Depends(get_database)):
         )
     return Product(**product)
 
+# Location/City endpoints for Baños de Agua Santa
+@api_router.get("/locations/delivery-areas")
+async def get_delivery_areas():
+    """Get available delivery areas (restricted to Baños de Agua Santa)"""
+    return {
+        "areas": [
+            {
+                "id": "banos-centro",
+                "name": "Baños Centro",
+                "city": "Baños de Agua Santa",
+                "state": "Tungurahua",
+                "country": "Ecuador",
+                "is_active": True
+            },
+            {
+                "id": "banos-norte",
+                "name": "Baños Norte",
+                "city": "Baños de Agua Santa", 
+                "state": "Tungurahua",
+                "country": "Ecuador",
+                "is_active": True
+            },
+            {
+                "id": "banos-sur",
+                "name": "Baños Sur",
+                "city": "Baños de Agua Santa",
+                "state": "Tungurahua", 
+                "country": "Ecuador",
+                "is_active": True
+            }
+        ]
+    }
+
+@api_router.get("/locations/validate")
+async def validate_delivery_location(city: str = None, address: str = None):
+    """Validate if delivery is available to the specified location"""
+    if not city:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="City is required"
+        )
+    
+    # Only allow delivery to Baños de Agua Santa
+    if city.lower() not in ["baños de agua santa", "banos de agua santa", "baños", "banos"]:
+        return {
+            "available": False,
+            "message": "Delivery is only available in Baños de Agua Santa",
+            "suggested_city": "Baños de Agua Santa"
+        }
+    
+    return {
+        "available": True,
+        "city": "Baños de Agua Santa",
+        "state": "Tungurahua",
+        "country": "Ecuador"
+    }
+
+# Theme Management endpoints
+@api_router.get("/user/theme")
+async def get_user_theme(
+    current_user: dict = Depends(get_current_active_user),
+    db = Depends(get_database)
+):
+    """Get user theme preference"""
+    theme_pref = await db.user_themes.find_one({"user_id": current_user["id"]})
+    if theme_pref:
+        return {"theme": theme_pref["theme"]}
+    return {"theme": "light"}  # Default theme
+
+@api_router.post("/user/theme")
+async def update_user_theme(
+    theme_data: ThemeUpdateRequest,
+    current_user: dict = Depends(get_current_active_user),
+    db = Depends(get_database)
+):
+    """Update user theme preference"""
+    if theme_data.theme not in ["light", "dark"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Theme must be 'light' or 'dark'"
+        )
+    
+    # Upsert theme preference
+    await db.user_themes.update_one(
+        {"user_id": current_user["id"]},
+        {
+            "$set": {
+                "user_id": current_user["id"],
+                "theme": theme_data.theme,
+                "updated_at": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+    
+    return {"message": "Theme preference updated successfully", "theme": theme_data.theme}
+
 # Include the router in the main app
 app.include_router(api_router)
 app.include_router(payment_router)
