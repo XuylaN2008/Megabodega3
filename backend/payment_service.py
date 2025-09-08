@@ -123,7 +123,7 @@ class PaymentService:
             checkout_status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
             
             # Find existing transaction
-            transaction = await self.collection.find_one({"session_id": session_id})
+            transaction = await db.payment_transactions.find_one({"session_id": session_id})
             if not transaction:
                 raise HTTPException(status_code=404, detail="Payment transaction not found")
             
