@@ -10,14 +10,15 @@ export default function RootLayout() {
   return (
     <MegaBodegaI18nProvider>
       <AuthProvider>
-        <CartProvider>
-          <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#1a1a1a' },
-            }}
-          >
+        <ThemeProvider>
+          <CartProvider>
+            <StatusBar style="light" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: '#1a1a1a' },
+              }}
+            >
             <Stack.Screen name="index" />
             <Stack.Screen name="splash" />
             <Stack.Screen name="auth/login" />
