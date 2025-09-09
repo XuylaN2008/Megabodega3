@@ -179,6 +179,10 @@ interface Translations {
     paste: string;
     cut: string;
     selectAll: string;
+    light_theme: string;
+    dark_theme: string;
+    city: string;
+    delivery_only_banos: string;
   };
   // Languages
   languages: {
