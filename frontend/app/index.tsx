@@ -35,8 +35,8 @@ export default function WelcomeScreen() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Text style={styles.logoEmoji}>🏪</Text>
-          <Text style={styles.title}>{t('welcome.title')}</Text>
-          <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{t('welcome.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.primary }]}>{t('welcome.subtitle')}</Text>
         </View>
 
         {/* User Welcome */}
