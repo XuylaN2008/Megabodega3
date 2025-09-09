@@ -37,6 +37,10 @@ interface Translations {
     createAccount: string;
     alreadyHaveAccount: string;
     noAccount: string;
+    invitationCode: string;
+    invitationCodeRequired: string;
+    invitationCodeInvalid: string;
+    invitationCodePlaceholder: string;
   };
   // Navigation
   nav: {
