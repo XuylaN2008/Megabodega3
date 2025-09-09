@@ -31,7 +31,8 @@ export default function RootLayout() {
             <Stack.Screen name="courier/dashboard" />
             <Stack.Screen name="staff/dashboard" />
           </Stack>
-        </CartProvider>
+          </CartProvider>
+        </ThemeProvider>
       </AuthProvider>
     </MegaBodegaI18nProvider>
   );
