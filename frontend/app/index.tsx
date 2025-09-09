@@ -133,13 +133,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#fff',
     letterSpacing: -2,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 20,
-    color: '#007AFF',
     fontWeight: '600',
   },
   userWelcome: {
