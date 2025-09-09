@@ -22,13 +22,14 @@ export default function WelcomeScreen() {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar style="light" />
       
       <View style={styles.content}>
-        {/* Language Selector */}
-        <View style={styles.languageSelectorContainer}>
+        {/* Language and Theme Selectors */}
+        <View style={styles.headerControls}>
           <MegaBodegaLanguageSelector />
+          <ThemeToggle compact />
         </View>
 
         {/* Logo */}
