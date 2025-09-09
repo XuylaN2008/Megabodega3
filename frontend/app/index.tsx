@@ -9,9 +9,11 @@ import {
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { MegaBodegaLanguageSelector } from '../components/MegaBodegaLanguageSelector';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useMegaBodegaI18n } from '../contexts/MegaBodegaI18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function WelcomeScreen() {
   const { t } = useMegaBodegaI18n();
