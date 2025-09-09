@@ -109,15 +109,16 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
-  languageSelectorContainer: {
-    alignItems: 'flex-end',
+  headerControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 40,
   },
   logoContainer: {
