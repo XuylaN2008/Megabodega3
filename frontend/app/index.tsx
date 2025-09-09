@@ -19,6 +19,7 @@ export default function WelcomeScreen() {
   const { t } = useMegaBodegaI18n();
   const { user } = useAuth();
   const { state } = useCart();
+  const { colors } = useTheme();
 
   return (
     <SafeAreaView style={styles.container}>
